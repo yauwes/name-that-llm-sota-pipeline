@@ -1,0 +1,10 @@
+data/
+external_data/
+oof_features/
+public_kernels/
+cache/
+leaderboard/
+__pycache__/
+*.pyc
+.DS_Store
+*.npz

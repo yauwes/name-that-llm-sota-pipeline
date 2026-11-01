@@ -1,0 +1,30 @@
+{
+  "n_rows": 2699,
+  "n_prompts": 150,
+  "cv_scheme": "GroupKFold(5, shuffle=True, random_state=20261015)",
+  "progression_k1": {
+    "tfidf_lowercase_baseline": 0.27484,
+    "tfidf_casesens_word_char": 0.34078,
+    "forensic_stylometry_bpe_gltr_gbdt_zoo": 0.41522992791449165,
+    "pytorch_multisample_dropout_mlp_base": 0.385958240119314,
+    "pytorch_multisample_dropout_mlp_distilled_kd": 0.41522247079294056,
+    "distilled_ridge_student_kd": 0.40632612478250063,
+    "6view_sparse_plus_external_pool_ensemble": 0.37449415858811835,
+    "topic_subspace_projected_dense_head": 0.25781754909271687,
+    "teacher_mega_ensemble_k1": 0.5026323639075316,
+    "co_distilled_born_again_k1": 0.5018941088739747,
+    "postproc_specialist_v40a_v38a_sinkhorn_k1": 0.5078299776286354
+  },
+  "multi_regime_final": {
+    "k1_per_passage_ba": 0.5078299776286354,
+    "k2_sparse_prompt_honest_sim_ba": 0.5594836978573768,
+    "k3_context_ba": 0.5571165796669152,
+    "k3_context_exact_dp_ba": 0.5714619038612306,
+    "k6_context_ba": 0.5863758389261745,
+    "k6_context_exact_dp_ba": 0.6163825879300359,
+    "k18_full_prompt_group_exact_dp_ba": 0.7242306736266468,
+    "dirichlet_alpha1_skewed_prior_k1_ba": 0.5084901861222185,
+    "dirichlet_alpha1_skewed_prior_k3_ba": 0.5577415421592443
+  },
+  "elapsed_seconds": 47.992801904678345
+}
