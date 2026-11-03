@@ -1,0 +1,10 @@
+{
+  "dataset": "ajikajadeh/ntl-e33-e35-research-checkpoint",
+  "version": 1,
+  "all_delta_member_bytes_sha256_verified": 43,
+  "manifest_byte_identical": true,
+  "download_zip_bytes": 14006496,
+  "elapsed_s": 4.807631625008071,
+  "archive_sha256": "cf0a1b81817688d95e4ea499f9058f877a66218d2b0899c557a156727d166592",
+  "scope": "All43new private delta members downloaded from Kaggle and SHA-256 verified; v4base not re-downloaded."
+}

@@ -2,17 +2,62 @@
 
 Klasifikasi 18 LLM dari satu passage, metrik balanced accuracy, prompt uji tidak pernah terlihat. Code competition: inferensi hidden test (sekitar 4.000 passage, tanpa `prompt_id`) berjalan di notebook Kaggle offline maksimal 9 jam. Tanggal deadline harus dicek ulang di Overview; tooltip Chrome saat sesi ini menunjuk 15 Januari 2027 06:59 WIB, berbeda dari deskripsi awal. Jangan memakai tanggal historis tanpa verifikasi.
 
-File ini adalah titik masuk untuk agen berikutnya. Detail per eksperimen ada di `research/REPORT.md`, notebook laporan di `notebook/ntl_report.ipynb`, catatan singkat lintas sesi di `../competition-log/name-that-llm.md`.
+File ini adalah titik masuk untuk agen berikutnya. Laporan sesi aktif: `notebook/ntl_session_20261103.ipynb`. `research/REPORT.md` dan `notebook/ntl_report.ipynb` memuat laporan historis; catatan lintas sesi di `../competition-log/name-that-llm.md`.
 
 ## Checkpoint aktif — 3–4 November 2026 WIB
 
 - Target riset pengguna: balanced accuracy **0,99**; **belum tercapai dan tidak dijamin**. Skor resmi terbaik yang dikonfirmasi API saat sesi ini adalah **0,665**, submission `57907202`. E23 menemukan dan memperbaiki ketidakcocokan layer/readout Q25-v5 pada salinan UNVALIDATED; tidak ada submission baru.
 - Submission `57930534` versi3 kini **COMPLETE, skor0,055**. Source memiliki jalur constant fallback yang berhasil direproduksi pada fixture; lihat audit V3 di bawah. Jangan mengirim ulang versi ini. Submission `57919873` = **0,663** dan `57919689` = **0,661**.
-- Akun `ajikajadeh`: GPU **0,00 jam tersisa**, TPU **20,00 jam tersisa** pada snapshot API terbaru setelah E26; reset API **7 November 2026 07:00 WIB**. Jangan memakai akun lain untuk melewati kuota. E14 `ajikajadeh/ntl-e14-regen-s2` kini **COMPLETE**; hasil dan log sudah diunduh ke `kernels/e14regen/out_live/`.
+- Akun `ajikajadeh`: GPU **0,00 jam tersisa**, TPU **20,00 jam tersisa**, dikonfirmasi ulang API4November di `research/live/20261104/quota_e33.json`; reset API **7 November 2026 07:00 WIB**. Jangan memakai akun lain untuk melewati kuota. E14 `ajikajadeh/ntl-e14-regen-s2` kini **COMPLETE**; hasil dan log sudah diunduh ke `kernels/e14regen/out_live/`.
 - Repo remote lama `yauwes/name-that-llm` tidak ada. Repo yang ditemukan dan bisa diakses: **https://github.com/yauwes/name-that-llm-sota-pipeline**. Isinya berbeda dari history lokal; publikasi memakai branch terisolasi agar main tidak tertimpa.
 - Upaya write GitHub melalui integration dan PAT mendapat403 (scope write tidak tersedia). Fallback menggunakan sesi Chrome pemilik repo untuk upload4file pada branch `codex/ntl-20261103-cpu-audit`; commit **b41b17dc96fb3fd6def134e2f56e9f616f92fb7d** sudah dikonfirmasi API. Empat file (readme, notebook report, arsip source, manifest) tersedia di branch tersebut. Root pipeline main tidak ditimpa. Pembaruan E14/E18 kemudian tersimpan di commit **40cc5c825813fa4d50ab6ff8143f8f04d4221de7**; ukuran dan Git blob hash keempat artefak cocok dengan unggahan lokal.
 - File checkpoint utama sekarang bernama **`readme.md`** sesuai permintaan pengguna. Bagian status lama di bawah adalah catatan historis, bukan snapshot terkini.
 - Snapshot API tersimpan di `research/live/20261103/`. Tidak ada kredensial di log tersebut. Nilai title/expectation bukan hasil pengukuran.
+
+### E33 selesai — uji skala konteks
+
+`research/experiments/large_context_reader.py` dan `large_context_audit.py` memperluas E32 dengan **3500 respons eksternal** Agent500 yang sudah diaudit E22. Semua baris dipakai sebagai konteks tak berlabel, bukan untuk melatih classifier atau memilih threshold/bobot. Target gold, lima outerfold, threshold E30, Gaussian E29, alpha0,1 dan eligibility2–18 dibekukan. Kasus1/2/4/18jawaban menghasilkan3530–4040baris per clustering. Kontrol tambahan menonaktifkan injectivity dan repel; tidak dipilih sebagai pemenang dari test. Seluruh3500baris selesai: MiniLM38,29detikMetal,2baris terpotong pada256token; QwenDC16 464,03detikMetal,0terpotong pada512token. Waktu adalah satu eksekusi, bukan medianbenchmark; ETA awal konservatif karena urutan longest-first.
+
+Ekstraksi Qwen menggunakan prefix16layer tanpa finalnorm setelah parity dengan hidden[16] model penuh lulus pada8passage gold terpanjang: maxabsolute difference0,0 pada batch yang sama; relativeL2 terhadap cachefp16 E20 sekitar0,00021185. Ini bukan jaminan parity semua input/backend. Feature eksternal disimpan dengan stable rowID, hash teks, hash model/source/revision dan completionbitmap di `data/features/e33_large_context/{semantic,dc16}/`. `context_index.json` menyimpan hash prompt/teks tanpa rawtext/source-label, sehingga audit replay tidak membutuhkan redistribusi paragraf eksternal. Smoke pertama sebelum penambahan indeks ini diarsipkan di `e33_preindex_smoke/`; tidak ada perubahan algoritma atau pilihan test.
+
+Gold–gold dan eksternal–eksternal mempunyai identitas prompt untuk audit pasangan. **Identitas pasangan lintas sumber tidak diketahui**, sehingga seluruh cross-origin merge tidak boleh disebut falsepositive. Tiga puluh skenario selesai8,40detikCPU: **0cross-origin edge**, seluruh prediksi primary identik E32. Dua respons/prompt tetap0,59580/0,63050/0,61555 menurutseed;18respons0,60532. Jadi delta[0;0] adalah hasil fixture ini, **bukan bukti ekuivalensi atau keamanan semua hidden4000rows**. Konteks7model/cap128token ternyata mudah dipisahkan dari gold; pool yang sama diulang lintasfold. Ini memicu kontrol E35 yang lebih dekat distribusinya, bukan alasan submit.
+
+### E34 selesai — verifier identitas sumber ditolak
+
+`research/experiments/pairwise_identity.py` menguji hipotesis berbeda: apakah pasangan passage ditulis oleh **model yang sama**, bukan menjawab prompt yang sama. Inspirasi notebook publik0,667 adalah same-source verifier; jangan menyamakannya dengan clusterer prompt E30/E33. Ini adaptasi tanpa dataset anotasi cue milik recipe publik, bukan replikasi0,667.
+
+Protokol: outer120train/30testprompt; inner96fit/24val. TFIDF word/char fit hanya pada train scope. Sepuluh symmetric pair feature berasal dari cosine StyleDistance/QwenDC16/MiniLM, dua cosineTFIDF, dua mean absolute difference, log wordcount ratio dan dua punctuation-distance.18000pasangan positif selalu same-model/different-prompt;18000negatif dibagi same-prompt, sibling-provider dan cross-provider. Sampling dengan replacement dapat mengulang pasangan, bukan36000observasi independen. Empat head (tiga LR dan satu HGB200tree) dipilih menurut source-class logloss inner-val, kemudian di-refit pada120prompt. Referensi6baris acak per kelas, seed tetap; alpha fusion0,1 tidak dipilih dari outertest atau dari logits LoRA yang pernah melihat inner-val. Train accuracy mengecualikan referensi dari prompt yang sama.
+
+Run pertama terminal sebelum fold0 selesai akibat API sklearn baru: HGB mempunyai `decision_function`, tetapi bukan Pipeline yang bisa diindeks. Manifest/error disimpan di `e34_preflight_type_error/`; pengecekan iterasi LR kini hanya berlaku untuk LR. Ini kesalahan operasional yang diperbaiki, bukan hasil kualitas.
+
+Lima fold selesai163,45detikCPU. HGB dipilih inner-val pada5/5fold; validation standalone0,12963–0,17130, refit-train sourceBA dengan same-prompt references dikeluarkan0,1445–0,1681. Mean outertest standalone0,14668, baseline0,59709 → fixed-alpha fusion**0,58153**. Pooled0,59716→0,58160; interval promptbootstrap delta[-0,02594;−0,00481],4000/4000draw valid; hanya1/5fold positif. **Ditolak**, lima head/vectorizer/reference checkpoint disimpan. Tidak mengecilkan alpha setelah melihat outertest. Angka train/val/test tersebut mengukur verifier, bukan mengklaim train/val champion atau hidden accuracy. Anotasi cue/prototype publik belum direplikasi; kegagalan adaptasi ini tidak membuktikan semua verifier gagal.
+
+### E35 selesai — konteks training dari prompt yang diketahui berbeda
+
+`mixed_context_audit.py` mengganti sebagian3500konteks E33 dengan **seluruh2159/2160baris outertraining**, lalu mengisi sisanya dengan eksternal yang dipilih menggunakan seed tetap tanpa label. Target hanya subset outertest yang sama; respons test lain dari prompt target **tidak** disisipkan. Dengan demikian target→trainingprompt link yang terinferensi pasti salah, sedangkan target→eksternal tetap tidak diketahui. Semua threshold/Gaussian/alpha/eligibility dibekukan; label konteks tidak diberikan ke clustering atau inference. Gaussian pernah melihat trainingcontext saat fit: ini stress dengan reference yang tersedia di serving, bukan4000unseenrows IID.
+
+Tiga puluh skenario selesai7,43detikCPU. Ada1known-wrong target→trainingedge pada masing-masing kasus2seed2,4seed0,18seed0; kasus memakai baris yang dapat berulang, **jangan menjumlahnya menjadi3kasus independen**. Tidak ada target→eksternaledge. Primary target predictions tetap identik E32/E33 pada semua kasus, meski eligibility sedikit berubah. Pada18context, known Gold+trainingpairprecision0,99874 dan recall0,36006; ini memasukkan banyak pasangan training, **bukan test-only precision**. Buktinya menunjukkan proxy ini tidak runtuh pada skala4k fixture tersebut, tetapi tidak menciptakan kenaikan akurasi atau menuntaskan gapCV−LB.
+
+**Keputusan E33–E35:** tidak ada kandidat baru yang memenuhi gerbang submit; champion resmi0,665 dipertahankan. Skor0,99/rank1 belum tercapai. Seluruh job lokal sudah terminal; tidak ada runtime Kaggle yang dinyalakan oleh ketiga eksperimen ini. Snapshot submissions resmi4November tersimpan di `research/live/20261104/submissions_e33.json`.
+
+**Checkpoint remote E33–E35 sudah terverifikasi:** dataset privat [ajikajadeh/ntl-e33-e35-research-checkpoint](https://www.kaggle.com/datasets/ajikajadeh/ntl-e33-e35-research-checkpoint), **version1READY,isPrivate=True**,43anggota delta termasuk5head,13,29MiB arsip. Seluruh43file remote diunduh ulang dan SHA-256 cocok; manifest byte-identical. Arsip SHA `cf0a1b81817688d95e4ea499f9058f877a66218d2b0899c557a156727d166592`. Base718,95MiB tidak diunggah ulang; gunakan datasetlama **version4**, bukan mengasumsikan delta berdiri sendiri.
+
+Urutan restore: **source GitHub terbaru → numericbasev4 → deltaE33–E35v1 → officialtrain.csv**. Prefix Kaggle hasil auto-extract delta adalah `context_identity_features_heads_20261104/`; isi di dalamnya langsung berakar `data/` dan `research/`. Basev4 memakai `reader_features_heads_20261103/`. Untuk arsip `.tar.gz` lokal, ekstrak ke root project karena arcname sudah relatif tanpa wrapper. Rawexternal tidak diperlukan untuk audit/inference replay; hash-only contextindex disertakan. Untuk ekstraksi ulang backbone, gunakan download/pinnedrevision pada manifest serta sourceAgent500 commit E22.
+
+`restore_context_identity.py` sudah memverifikasi355file base sesuai manifestv4 melalui symlink ke artefak lokal yang di-hash ulang, lalu mengekstrak/memverifikasi43file delta ke direktori terisolasi. Tiga cached pipeline E33/E34/E35 mereproduksi metrik; **kelima estimator/vectorizer E34 benar-benar dimuat ulang dan mereproduksi verifier+fusion prediction**. Total31,54detik. Ini bukan retraining atau ekstraksi/CUDA/hiddentest ulang. Report dan exact codehash ada di `research/live/20261104/{context_identity_restore_verification,identity_checkpoint_inference_verification,private_delta_roundtrip_verified}.json`. Sourcearchive final juga memuat report ini; hash arsip pada restoreproof menunjuk snapshot sebelum penambahan proof/dokumentasi, sedangkan hash kode algoritma diperiksa tetap sama.
+
+Notebook aktif kini **25selkode/50seltotal**, seluruhnya dieksekusi dan lolos nbformatvalidation. Perintah dari root project:
+
+```bash
+.venv/bin/python research/experiments/large_context_audit.py
+.venv/bin/python research/experiments/pairwise_identity.py
+.venv/bin/python research/experiments/mixed_context_audit.py
+.venv/bin/python research/checkpoints/checkpoint_identity_inference_smoke.py
+.venv/bin/python notebook/build.py session_20261103.py ntl_session_20261103.ipynb
+.venv/bin/python notebook/run_session_report.py
+```
+
+Dengan privatecache lengkap, tiga perintah pertama melakukan cached replay, **bukan eksperimen training baru**. Manifest menolak resume ketika kode/fitur/config berbeda. Untuk eksperimen baru gunakan nama direktori/manifest baru; jangan menghapus foldcache lama agar seolah-olah bisa direfit dengan protokol yang sudah berubah.
 
 ### E27–E32 selesai — hasil dan batas generalisasi
 
@@ -206,7 +251,7 @@ Urutanrestore: buka sourcearchive, **overlay private checkpoint setelahsource**,
 
 ### Future work terurut (nilai informasi per biaya)
 
-**Prioritas baru:** uji skala pengelompokan pada lebih banyak kandidat dan distractor semantik; batch30prompt belum sama dengan4000hiddenpassage. Kalibrasi confidence/false-merge dari train scope, pertahankan eligibility dan ukuran grup parsial pada evaluasi, dan jangan memilih bobot dari outertest. Konfirmasi komponen pada pipeline kuat sebelum memakai kesempatan submission.
+**Prioritas baru setelah E33–E35:** uji skala4k sudah dilakukan pada dua fixture tanpa gain primary. Jangan mengulang penambahan jumlah distractor mudah atau mengecilkan bobot E34 dari outertest. Yang masih hilang adalah gold baru dari18versi model sumber dan prompt/domain yang lebih dekat hidden; atau CV champion yang bisa direproduksi dari checkpoint+manifest baru. Konfirmasi komponen pada pipeline kuat sebelum memakai kesempatan submission. Pemilihan parameter lanjutan tetap inner-val; seluruhgold historis telah dipakai berulang.
 
 **E25/E26 selesai:** style fusion membantu cabang baseline lebih lemah, belum terkonfirmasi pada LoRA kuat. E27 nested hybrid-versus-logits-only sudah selesai dan tidak mendukung promosi. E28B likelihood sudah selesai dan belum mendukung promosi. E29 mengukur optimisme oracle; E30 meningkatkan grouping pada proxy, sementara E31/E32 belum mengonfirmasi gain pada sparse2context. Jangan mengulang ekstraksi style atau mengubah alpha berdasarkan test historis.
 

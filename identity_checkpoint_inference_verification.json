@@ -1,0 +1,47 @@
+{
+  "checkpoints": [
+    {
+      "fold": 0,
+      "rows": 540,
+      "head_reloaded": true,
+      "vectorizers_reloaded": true,
+      "verifier_and_fusion_match": true,
+      "checkpoint_sha256": "c7d13f571c2762455f8b131dcab1b723b6d3f39ab23c8b42613b0f87b281b40e"
+    },
+    {
+      "fold": 1,
+      "rows": 540,
+      "head_reloaded": true,
+      "vectorizers_reloaded": true,
+      "verifier_and_fusion_match": true,
+      "checkpoint_sha256": "6daf4cc18810507a9ec02a6f90c713d30d8ed56bb4351d742615bf4d86d0b5be"
+    },
+    {
+      "fold": 2,
+      "rows": 539,
+      "head_reloaded": true,
+      "vectorizers_reloaded": true,
+      "verifier_and_fusion_match": true,
+      "checkpoint_sha256": "ad1619faa3797f58b3c921438df0c93a494d93d08f205481e453d5d1df867457"
+    },
+    {
+      "fold": 3,
+      "rows": 540,
+      "head_reloaded": true,
+      "vectorizers_reloaded": true,
+      "verifier_and_fusion_match": true,
+      "checkpoint_sha256": "b2e23e0881473185049c35eb29e14c3e1506731bb4f2a84a6659392aea2c9164"
+    },
+    {
+      "fold": 4,
+      "rows": 540,
+      "head_reloaded": true,
+      "vectorizers_reloaded": true,
+      "verifier_and_fusion_match": true,
+      "checkpoint_sha256": "32584cb65967797653b731160cfed878b7765fa0ebdc5909094f2aea2a938c4b"
+    }
+  ],
+  "elapsed_s": 15.863617708004313,
+  "code_sha256": "243522f37836216bf6afefab1f34281a7e79fb216bdf5d08dbb434a5de7286ed",
+  "scope": "Five reloaded E34 estimators/vectorizers reproduce saved held-out classifier and fusion predictions; no retraining or CUDA/leaderboard validation."
+}
