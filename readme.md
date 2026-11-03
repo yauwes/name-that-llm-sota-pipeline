@@ -10,7 +10,7 @@ File ini adalah titik masuk untuk agen berikutnya. Detail per eksperimen ada di 
 - Submission `57930534` masih **PENDING** saat snapshot API. Jangan mengirim ulang versi yang sama atau menganggapnya sudah berhasil. Submission `57919873` = **0,663** dan `57919689` = **0,661**.
 - Akun `ajikajadeh`: GPU **0,00 jam tersisa**, TPU **20,00 jam tersisa** pada snapshot; reset API **7 November 2026 07:00 WIB**. Jangan memakai akun lain untuk melewati kuota. E14 `ajikajadeh/ntl-e14-regen-s2` kini **COMPLETE**; hasil dan log sudah diunduh ke `kernels/e14regen/out_live/`.
 - Repo remote lama `yauwes/name-that-llm` tidak ada. Repo yang ditemukan dan bisa diakses: **https://github.com/yauwes/name-that-llm-sota-pipeline**. Isinya berbeda dari history lokal; publikasi akan memakai branch/folder terisolasi agar tidak menimpa pekerjaan yang sudah ada.
-- Upaya write GitHub melalui integration dan PAT mendapat403 (scope write tidak tersedia). Fallback menggunakan sesi Chrome pemilik repo untuk upload4file pada branch `codex/ntl-20261103-cpu-audit`; commit **b41b17dc96fb3fd6def134e2f56e9f616f92fb7d** sudah dikonfirmasi API. Empat file (readme, notebook report, arsip source, manifest) tersedia di branch tersebut. Root pipeline main tidak ditimpa.
+- Upaya write GitHub melalui integration dan PAT mendapat403 (scope write tidak tersedia). Fallback menggunakan sesi Chrome pemilik repo untuk upload4file pada branch `codex/ntl-20261103-cpu-audit`; commit **b41b17dc96fb3fd6def134e2f56e9f616f92fb7d** sudah dikonfirmasi API. Empat file (readme, notebook report, arsip source, manifest) tersedia di branch tersebut. Root pipeline main tidak ditimpa. Pembaruan E14/E18 kemudian tersimpan di commit **40cc5c825813fa4d50ab6ff8143f8f04d4221de7**; ukuran dan Git blob hash keempat artefak cocok dengan unggahan lokal.
 - File checkpoint utama sekarang bernama **`readme.md`** sesuai permintaan pengguna. Bagian status lama di bawah adalah catatan historis, bukan snapshot terkini.
 - Snapshot API tersimpan di `research/live/20261103/`. Tidak ada kredensial di log tersebut. Nilai title/expectation bukan hasil pengukuran.
 
@@ -33,8 +33,8 @@ Sumber kode: `research/experiments/reader_foldlocal.py`. Hasil/config/hash/per-f
 - **E16**: SVC4 baseline test mean **0,50057**, fusion reader Qwen27-layer16 dengan opsi train-prompt nuisance projection **0,52424**, positif **5/5** rotasi. Paired prompt-bootstrap95% delta **[+0,0120; +0,0348]**. Train-only scaler/PCA128; rank/gamma/C/bobot dipilih di val. Waktu sekitar9,92detik setelah import.
 - **E17 ablation**: fusion **tanpa** projection sudah memberi **0,52231**. CI95% fusion−SVC **[+0,0101; +0,0333]**. Tambahan selection projection hanya +0,00193 dengan CI95% **[-0,00145; +0,00531]**: **belum terkonfirmasi**. Maka mekanisme yang didukung adalah komplementaritas frozen-reader/SVC, bukan klaim bahwa menghapus topik pasti membantu. Waktu sekitar4,80detik.
 - Semua angka di atas memakai dataset historis yang sudah berulang kali ditelaah; bukan gold eksternal baru. Belum ada pembandingan nested melawan champion0,665. **Tidak layak submit sebagai pengganti champion.**
-- Notebook laporan yang telah dieksekusi8sel kode dalam IPython: `notebook/ntl_session_20261103.ipynb` (EDA, manifest, hasil train/val/test, ETA/elapsed, ablation, riwayat resmi, quota). Notebook ini CPU report; inference competition tetap notebook terpisah.
-- Penggunaan komputasi baru sesi ini: CPU lokal saja. Chrome Active Events menampilkan dua pekerjaan yang sudah ada: scoring submission57930534 dan batch E14T4x2. Tidak dibuat sesi GPU/TPU interaktif baru yang perlu diputus. Jangan menghentikan scoring resmi; batch E14 berhenti otomatis saat selesai.
+- Notebook laporan yang telah dieksekusi12sel kode dalam IPython: `notebook/ntl_session_20261103.ipynb` (EDA, manifest, hasil train/val/test, ETA/elapsed, ablation, riwayat resmi, quota). Notebook ini CPU report; inference competition tetap notebook terpisah.
+- Pada iterasi E15–E18 komputasi baru memakai CPU lokal; E20 lanjutan memakai Metal lokal, dengan rincian di bawah. Chrome Active Events menampilkan dua pekerjaan yang sudah ada: scoring submission57930534 dan batch E14T4x2. Tidak dibuat sesi GPU/TPU interaktif baru yang perlu diputus. Jangan menghentikan scoring resmi; batch E14 berhenti otomatis saat selesai.
 
 ### E18 — audit hasil selesai dan analisis kesalahan
 
@@ -44,6 +44,54 @@ Kernel E14 menyimpan OOF/log, tetapi source **tidak memanggil penyimpanan adapte
 
 Analisis E16 (cabang SVC+reader, **bukan** championLB) menemukan107error baseline diperbaiki dan58prediksi benar menjadi salah. Akurasi keluarga0,7801;53,76% dari984error tetap dalam keluarga yang benar. Kebingungan terbesar Gemini3.7→3.8:68passage. BA pada passage≤64kata0,4098 dibanding>160kata0,6359. Hasil perkelas/panjang/pasangan ada di `research/experiments/e18_closing_audit/results.json`. Slice ini diagnostik yang dibaca setelah test; jangan memilih hyperparameter baru dari slice lalu menyebut hasilnya konfirmasi independen.
 
+### Iterasi lanjutan E19–E22 — seluruh run selesai
+
+| Eksperimen | Protokol dan pembanding | Hasil test mean | Keputusan |
+|---|---|---:|---|
+| E19, reader27 + logits stage1 | Rotasi 70/15/15, stage1 eksternal + SVC4 | 0,57352 → 0,58076 | CI delta [-0,00388; +0,01837], belum terkonfirmasi |
+| E20, spectral reader0.6B | Pembanding E19 yang sama | 0,57352 → 0,57929 | CI [-0,00577; +0,01739], belum terkonfirmasi |
+| E21, konfirmasi scope outer5fold | LoRA q8+ll8 host-adapted, alpha reader fixed0,1 | 0,59709 → 0,59234 | 2/5fold positif, CI [-0,01372; +0,00372], tidak dipromosikan |
+| E22, data publik baru | SVC4 cap500/kelas; penggantian pada jumlah/bobot kelas sama | 0,40299 → 0,40299 | Penggantian ditolak di val pada seluruh5rotasi; baseline dipertahankan |
+
+Angka ini bukan CV champion LB0,665. Tidak ada submission baru dari eksperimen tersebut. Seluruh interval bootstrap bersyarat pada model/data historis dan tidak mencakup bias dari keseluruhan pencarian adaptif.
+
+**E19.** `reader_strong_fusion.py` memakai skor LoRA external-only stage1, bukan menyalin stage2 OOF ke rotasi yang scope pelatihannya berbeda. Transformasi reader fit di train; konfigurasi dipilih menurut val logloss, alpha menurut val BA. Reader standalone terpilih0,50437. Hybrid PCA128 + skor stage1 selalu terpilih, dibanding reader full-dimension. Run awal max_iter400 mengeluarkan warning dan diarsipkan di `e19_initial_iter400_unconverged/`. Run final max_iter2000 sudah konvergen (maksimum457iterasi), hasil utama tetap sama. Waktu final24,74detik; head/scaler/PCA tiapfold disimpan `.joblib`.
+
+**E20.** `spectral_reader.py` mengekstrak DC/first-AC length-normalized dari raw response pada layer8/16/28. Qwen/Qwen3-0.6B dipatok revision `c1899de289a04d12100db370d81485cdf75e47ca`; batch8, cap512token, tanpa prompt asli. Seluruh2699passage selesai di Metal lokal dalam798,02detik setelah smoke; **0passage terpotong**. Alokasi Metal setelah batch sekitar1,14GB, bukan peak seluruh proses. Batas allocator50% recommended working set. Proses ekstraksi telah terminal dan model dilepas; tidak ada runtime cloud yang dinyalakan.
+
+Self-check formula terhadap DCT-II scipy, kasus satu token, dan AC offset-invariance lulus. Cache di `data/features/e20_spectral_reader/` memuat ID, hash teks tiapbaris, hash model/tokenizer/config, revision, precision, dan completion bitmap yang ditulis setelah feature flush. Jangan mengubah source/config lalu resume cache tanpa memverifikasi signature. Evaluasi head selesai74,40detik: standalone DC0,33382, DCAC0,31792; CI DCAC−DC [-0,03383; +0,00290]. Tambahan AC belum terbukti membantu. Ini adaptasi response-only K=1 pada proxy kecil, **bukan** replikasi hasil multi-query READER.
+
+**E21.** `nested_reader_confirm.py`: outer120train/30test prompt, mencakup seluruh150prompt/2699baris. C reader dipilih hanya pada inner96train/24val dari outertrain, lalu refit120; alpha0,1 ditetapkan sebelum outertest. Baseline q8+ll8 stage2 memakai fold yang sama. Skor LoRA outer-model tidak dipakai untuk memilih bobot pada inner-val, karena model itu melihat inner-val. Waktu16,18detik, reader standalone0,31932. Protokol ini terpisah dari rotasi70/15/15; jangan menggabungkan reratanya. Cache LoRA lama masih tidak punya manifest rowID/modelrevision lengkap; seluruh gold juga telah ditelaah lintas sesi. Jadi ini konfirmasi scope yang lebih baik, bukan gold baru yang buta.
+
+**E22.** Sumber [READER data release](https://github.com/LeoJeshua/READER/blob/main/data/README.md) dipatok commit `2dd0d5815fd93fb205d88ae64ae5191b4998cf4a`. Tujuh alias tepat: GPT5.5; GPT5.6luna/sol/terra; Claudeopus4.6/4.8; KimiK3. Dari3500respons, 0exactduplikat terhadap train/pool lama, 0near-gold char≥0,8, dan0prompt-cos≥0,35.3369lolos filter:3033train eksternal,336test eksternal dari50prompt yang dibekukan. Identitas alias tidak menjamin bobot API immutable.
+
+Hanya18,11% respons memiliki tanda penutup; batas128token berbeda dari paragraf mandiri kompetisi. Pada proxy SVC4 yang menjaga jumlah/bobot setiapkelas, validation penggantian lebih rendah pada5/5rotasi, selisih sekitar−0,038 sampai−0,068. Tidak dipilih, sehingga test selected identik baseline; CI delta[0;0] ini **bukan** bukti ekuivalensi model augmentasi. Recall eksternal pada tujuh label yang hadir hanya0,09421; ini **bukan** BA18kelas ataupun hidden-test score. Waktu proxy571,10detik. Bukti ini menolak penggantian pool secara menyeluruh dalam setting tersebut; belum menguji penambahan berbobot kecil atau subset respons lengkap.
+
+**Checkpoint dan reproduksi.** Head E19/E20/E21 disimpan; E22 menyimpan fold logits/config/log, tanpa estimator sparse siapinferensi. Data mentah Agent500 tetap di `data/ext/reader_agent500/`, tidak dipublikasi ulang di GitHub. Source notebook champion `ajikajadeh/ntl-apex-i-sota-contender/1` berhasil dipull ke `research/checkpoints/champion_apex_v1/`; ini arsip versi1, jangan menggantinya dengan versi3 yang masih pending hanya karena namanya sama.
+
+Jalankan dari root project dengan `.venv` yang sudah ada:
+
+```bash
+.venv/bin/python research/experiments/fetch_reader_inputs.py
+.venv/bin/python research/experiments/spectral_reader.py --self-check
+.venv/bin/python research/experiments/reader_strong_fusion.py
+.venv/bin/python research/experiments/spectral_reader.py
+.venv/bin/python research/experiments/spectral_reader.py --evaluate
+.venv/bin/python research/experiments/nested_reader_confirm.py
+.venv/bin/python research/experiments/reader_data_audit.py
+.venv/bin/python research/experiments/reader_data_proxy.py
+.venv/bin/python notebook/build.py session_20261103.py ntl_session_20261103.ipynb
+.venv/bin/python notebook/run_session_report.py
+```
+
+Ekstraktor saat ini mendukung Metal/CPU lokal; bukan port CUDA/TPU untuk hidden rerun. Di Codex, akses Metal memerlukan eksekusi di luar sandbox; bila device berubah keCPU, signature cache menolak resume. Data kompetisi dan cache lama stage1/SVC harus tersedia untuk evaluasi fusion. Download source/model/data publik tidak menjalankan custom code repo pihak ketiga.
+
+### Backup numerik privat setelah E22
+
+Dataset **[ajikajadeh/ntl-reader-e19-e22-checkpoint](https://www.kaggle.com/datasets/ajikajadeh/ntl-reader-e19-e22-checkpoint)** versi1 sudah berstatus `ready` dan `isPrivate=True`. Backup memuat26artefak numerik, termasuk15head terlatih, fitur spectral2699passage, ID/hash teks, completion bitmap, dan logits proxy E22; arsip lokal47,13MiB. Seluruh isi arsip lokal diperiksa dengan SHA-256. Daftar remote dipaginasi dan seluruh26ukuran artefak cocok; ini verifikasi ukuran remote, bukan pembacaan ulang setiap byte remote.
+
+Kaggle membuka arsip otomatis: fitur berada di prefix `reader_features_heads_20261103/`, source di `ntl_research_checkpoint_20261103/source/`. Salin isi prefix fitur ke root source bila hendak melanjutkan training; jangan mengekstrak ke direktori input Kaggle yang readonly. Baseline cache lama tetap tersedia di dataset privat `ajikajadeh/ntl-research-checkpoint` (`oof_artifacts.tgz`). Training juga memerlukan `train.csv` resmi dan pool yang tercantum pada manifest. Repo GitHub hanya membawa source, laporan agregat, dan source notebook champion; tanpa raw passage kompetisi, kredensial, atau model numerik besar.
+
 ### Riset tambahan dan dampaknya pada keputusan
 
 1. [Where Does Authorship Signal Emerge in Encoder-Based Language Models?](https://arxiv.org/abs/2605.19908), preprintMei2026: scorer/interaction dapat mengubah tempat konsolidasi sinyal. Ini memotivasi ablation scorer, tetapi hasil encoder penulis manusia tidak menjamin exact-sourceLLM attribution. E15 adalah adaptasi probe sederhana, bukan replikasi late-interaction paper.
@@ -51,12 +99,13 @@ Analisis E16 (cabang SVC+reader, **bukan** championLB) menemukan107error baselin
 3. [Author Representation Strategies for Zero-Shot Authorship Attribution](https://arxiv.org/abs/2610.03531), Oktober2026: representasi gaya lebih menjanjikan daripada label-only prompting dalam settingpaper. Ini bukan bukti90%/99% pada kompetisi.
 4. [Notebook publik terbaru:All Public + What Failed](https://www.kaggle.com/code/alexchilton/name-that-llm-0-666-all-public-what-failed) diunduh read-only, tidak dijalankan. Penulis melaporkan0,666 per2November, Hungarian rugi berulang, tambahan backbone kecil, dan identical-code spread sampai0,009. Ini laporan penulis, bukan estimasi derau universal. Source hash/metadata disimpan; jangan menyalin gate/annotation sebelum provenance dan rules diperiksa.
 5. Write-up DAIGTjuara2 lokal:CV hampir sempurna pernah tidak mengikutiLB; pretraining lintas domain dan adaptasi in-domain membantu pada tugas biner mereka. Angka binaryAUC tidak ditransfer keBA18kelas kita.
+6. [Every Model Leaves a Trace: Multi-Resolution LLM Fingerprinting](https://arxiv.org/abs/2610.28434), 20 Oktober2026: membedakan keluarga, versi dekat, dan LoRA dalam protokol prompt-grouped. Paper secara eksplisit menandai prompt-neutralized embeddings sebagai diagnostik yang membutuhkan jawaban semua kandidat pada prompt yang sama. Itu tidak setara dengan hidden test kita yang tidak menyediakan grup lengkap. Karena itu, peningkatan dari centering seluruh18jawaban tidak boleh dijadikan ekspektasi submission. E21 justru menguji tambahan sinyal pada satu passage dengan scope train yang sesuai.
 
 ### Future work terurut (nilai informasi per biaya)
 
 1. **E14 COMPLETE dan audit selesai**: tidak dipromosikan; OOF/log tersedia, bobot tahap2 tidak disimpan oleh source. Tidak ada runtime interaktif baru yang dinyalakan sesi ini. Jangan menjadwalkan ulang augmentasi ini sebelum ada hipotesis baru.
 2. **Perbaiki provenance cache**: simpan id/hashtext setiap baris, dataset version, modelrevision, tokenizer, precision dan codehash. Jangan memakai pool cache yang tidak dapat direkonstruksi untuk klaim konfirmasi.
-3. **Konfirmasi fusion sederhana** pada outer-training yang benar dan ensemble kuat; jangan membuka test lalu mencari ratusan bobot. Tidak perlu mempertahankan projection sebelum gain incremental dibuktikan.
+3. **Konfirmasi fusion E21 sudah selesai dan tidak lolos** pada pembanding LoRA stage2. Jangan menambahkan reader kecil ke champion hanya karena E16 membantu SVC lemah. Variasi DC-only atau regularisasi AC berbeda harus menjadi hipotesis baru dengan scope evaluasi tetap, bukan pencarian bobot dari outer-test.
 4. **Gold exact-source bertopik baru** lebih bernilai untuk generalisasi daripada menambah fitur pada150prompt yang sama. Akuisisi API/vendor hanya bila identitas versi, setting, akses dan anggaran sah tersedia. Token HFread/write bukan saldo untuk inference berbayar.
 5. **TPU akunajikajadeh** masih punya20jam pada snapshot. Portmodel CUDA memerlukan smoke backend XLA/JAX dan checkpoint export parity. Jangan mengalihkan kernelCUDA yang sama keTPU tanpa port/testing, atau membakar quota untuk mengulang cabang yang sudah ditolak. Jalankan hanya eksperimen yang mempunyai comparator dan kriteria keputusan jelas.
 6. **0,99 tetap target aktif, belum tercapai**. Semua promosi harus berdasarkan bukti; tidak ada jaminan bahwa kandidat baru pasti lebih tinggi dihidden test. Sesi ini sengaja tidak menambah submission.
