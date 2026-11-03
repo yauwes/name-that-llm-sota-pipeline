@@ -1,0 +1,68 @@
+{
+  "checks": [
+    {
+      "kind": "DistilGPT2-summary LR checkpoint",
+      "fold": 0,
+      "rows": 414,
+      "predictions_match": true
+    },
+    {
+      "kind": "Gaussian WPCA64 checkpoint",
+      "fold": 0,
+      "rows": 540,
+      "predictions_match": true
+    },
+    {
+      "kind": "DistilGPT2-summary LR checkpoint",
+      "fold": 1,
+      "rows": 413,
+      "predictions_match": true
+    },
+    {
+      "kind": "Gaussian WPCA64 checkpoint",
+      "fold": 1,
+      "rows": 540,
+      "predictions_match": true
+    },
+    {
+      "kind": "DistilGPT2-summary LR checkpoint",
+      "fold": 2,
+      "rows": 414,
+      "predictions_match": true
+    },
+    {
+      "kind": "Gaussian WPCA64 checkpoint",
+      "fold": 2,
+      "rows": 539,
+      "predictions_match": true
+    },
+    {
+      "kind": "DistilGPT2-summary LR checkpoint",
+      "fold": 3,
+      "rows": 414,
+      "predictions_match": true
+    },
+    {
+      "kind": "Gaussian WPCA64 checkpoint",
+      "fold": 3,
+      "rows": 540,
+      "predictions_match": true
+    },
+    {
+      "kind": "DistilGPT2-summary LR checkpoint",
+      "fold": 4,
+      "rows": 414,
+      "predictions_match": true
+    },
+    {
+      "kind": "Gaussian WPCA64 checkpoint",
+      "fold": 4,
+      "rows": 540,
+      "predictions_match": true
+    }
+  ],
+  "code_sha256": "9d1da2277b60ee680c603c80799cd4e0c20c10d8adc24c7ee37a89f7646dfd5b",
+  "elapsed_s": 13.728094374993816,
+  "restored_directory": "/var/folders/bs/ctds70js6y114wv99bkyy6x80000gn/T/ntl_restore_20261104_4aw81343/source",
+  "scope": "Ten restored self-trained checkpoint files loaded and held-out predictions reproduced. Not all50joblib files, independent retraining, CUDA inference or leaderboard validation."
+}

@@ -1,17 +1,17 @@
 # Name That LLM — verified research checkpoint
 
-Official best verified public balanced accuracy: **0.665**. Target0.99 remains unachieved. No new competition submission from E15–E26.
+Official best verified public balanced accuracy: **0.665**. Target0.99 and rank1 remain unachieved. No new competition submission from E15–E32.
 
 - [Current handoff and measured experiments](readme.md)
-- [Executed EDA and experiment notebook — 17 code cells](ntl_session_20261103.ipynb)
-- [Source archive](ntl_research_checkpoint_20261103.zip)
-- [SHA-256 manifest](checkpoint_manifest_20261103.json)
-- [Q25-v5 contract repair — UNVALIDATED, DO NOT SUBMIT](ntl_apex_v3_contract_fixed_UNVALIDATED.ipynb)
+- [Executed EDA and experiment notebook — 22 code cells](ntl_session_20261103.ipynb)
+- [Source archive](ntl_research_checkpoint_20261103.zip) and [SHA-256 manifest](checkpoint_manifest_20261103.json)
+- [Clean restore and six cached CPU replays](restore_verification_20261104.json)
+- [Ten restored checkpoints reproduce held-out predictions](checkpoint_inference_verification_20261104.json)
 
-E23 found a concrete V3 loader defect: Q25-v5 adapters target32layers, while V3 instantiated27 and used the wrong readout indices. The author's reference establishes the corrected contract. A CPU-only probe in the exact V3 Docker resolves all six adapters after correction. Full CUDA inference, resource limits and quality remain unverified.
+E27 style/logit ablation and E28 probability summaries did not establish a replacement for the champion. E29 quantifies the gap between oracle context and inferred groups. E30 improves group recovery on a small Gaussian proxy; E31/E32 show a gain with dense18-response context but uncertain transfer to sparse2-response cases. These are historical local experiments, not measured leaderboard gains.
 
-E24 paired ranking did not improve ordinary heads. E25 StyleDistance fusion improved a weaker local branch from0.57352 to0.58751; E26 on stronger LoRA was0.59709 to0.59857 with a confidence interval crossing zero. These are historical local experiments, not measured improvements over the0.665 champion.
+The private checkpoint contains full fold JSON as well as derived arrays and trained heads. Restore public source first, overlay private data, then attach the official train.csv. Public fold JSON is aggregate-only. Read the handoff for version-specific paths and verification scope.
 
-Original Apex V3 submission57930534 scored0.055. Its fatal-exception-to-constant-fallback defect was reproduced. Both repairs remain ineligible for submission until real runtime and quality gates pass.
+The Q25-v5 contract repair remains **UNVALIDATED**, pending real CUDA full-branch and quality checks. Original V3 scored0.055; champion V1 remains0.665.
 
-This branch preserves main. Inherited pipeline files and aspirational score names are historical. Numeric features/heads are in private Kaggle storage; this public snapshot excludes credentials and raw competition passages.
+This branch preserves main. Inherited score names are historical. Public uploads exclude credentials, raw competition passages and numeric model weights. Full numeric state is stored privately on Kaggle.
