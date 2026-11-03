@@ -7,7 +7,7 @@ File ini adalah titik masuk untuk agen berikutnya. Detail per eksperimen ada di 
 ## Checkpoint aktif — 3 November 2026 WIB
 
 - Target riset pengguna: balanced accuracy **0,99**; **belum tercapai dan tidak dijamin**. Skor resmi terbaik yang dikonfirmasi API saat sesi ini adalah **0,665**, submission `57907202`.
-- Submission `57930534` masih **PENDING** saat snapshot API. Jangan mengirim ulang versi yang sama atau menganggapnya sudah berhasil. Submission `57919873` = **0,663** dan `57919689` = **0,661**.
+- Submission `57930534` versi3 kini **COMPLETE, skor0,055**. Source memiliki jalur constant fallback yang berhasil direproduksi pada fixture; lihat audit V3 di bawah. Jangan mengirim ulang versi ini. Submission `57919873` = **0,663** dan `57919689` = **0,661**.
 - Akun `ajikajadeh`: GPU **0,00 jam tersisa**, TPU **20,00 jam tersisa** pada snapshot; reset API **7 November 2026 07:00 WIB**. Jangan memakai akun lain untuk melewati kuota. E14 `ajikajadeh/ntl-e14-regen-s2` kini **COMPLETE**; hasil dan log sudah diunduh ke `kernels/e14regen/out_live/`.
 - Repo remote lama `yauwes/name-that-llm` tidak ada. Repo yang ditemukan dan bisa diakses: **https://github.com/yauwes/name-that-llm-sota-pipeline**. Isinya berbeda dari history lokal; publikasi akan memakai branch/folder terisolasi agar tidak menimpa pekerjaan yang sudah ada.
 - Upaya write GitHub melalui integration dan PAT mendapat403 (scope write tidak tersedia). Fallback menggunakan sesi Chrome pemilik repo untuk upload4file pada branch `codex/ntl-20261103-cpu-audit`; commit **b41b17dc96fb3fd6def134e2f56e9f616f92fb7d** sudah dikonfirmasi API. Empat file (readme, notebook report, arsip source, manifest) tersedia di branch tersebut. Root pipeline main tidak ditimpa. Pembaruan E14/E18 kemudian tersimpan di commit **40cc5c825813fa4d50ab6ff8143f8f04d4221de7**; ukuran dan Git blob hash keempat artefak cocok dengan unggahan lokal.
@@ -33,7 +33,7 @@ Sumber kode: `research/experiments/reader_foldlocal.py`. Hasil/config/hash/per-f
 - **E16**: SVC4 baseline test mean **0,50057**, fusion reader Qwen27-layer16 dengan opsi train-prompt nuisance projection **0,52424**, positif **5/5** rotasi. Paired prompt-bootstrap95% delta **[+0,0120; +0,0348]**. Train-only scaler/PCA128; rank/gamma/C/bobot dipilih di val. Waktu sekitar9,92detik setelah import.
 - **E17 ablation**: fusion **tanpa** projection sudah memberi **0,52231**. CI95% fusion−SVC **[+0,0101; +0,0333]**. Tambahan selection projection hanya +0,00193 dengan CI95% **[-0,00145; +0,00531]**: **belum terkonfirmasi**. Maka mekanisme yang didukung adalah komplementaritas frozen-reader/SVC, bukan klaim bahwa menghapus topik pasti membantu. Waktu sekitar4,80detik.
 - Semua angka di atas memakai dataset historis yang sudah berulang kali ditelaah; bukan gold eksternal baru. Belum ada pembandingan nested melawan champion0,665. **Tidak layak submit sebagai pengganti champion.**
-- Notebook laporan yang telah dieksekusi12sel kode dalam IPython: `notebook/ntl_session_20261103.ipynb` (EDA, manifest, hasil train/val/test, ETA/elapsed, ablation, riwayat resmi, quota). Notebook ini CPU report; inference competition tetap notebook terpisah.
+- Notebook laporan yang telah dieksekusi13sel kode dalam IPython: `notebook/ntl_session_20261103.ipynb` (EDA, manifest, hasil train/val/test, ETA/elapsed, ablation, riwayat resmi, quota). Notebook ini CPU report; inference competition tetap notebook terpisah.
 - Pada iterasi E15–E18 komputasi baru memakai CPU lokal; E20 lanjutan memakai Metal lokal, dengan rincian di bawah. Chrome Active Events menampilkan dua pekerjaan yang sudah ada: scoring submission57930534 dan batch E14T4x2. Tidak dibuat sesi GPU/TPU interaktif baru yang perlu diputus. Jangan menghentikan scoring resmi; batch E14 berhenti otomatis saat selesai.
 
 ### E18 — audit hasil selesai dan analisis kesalahan
@@ -67,7 +67,7 @@ Self-check formula terhadap DCT-II scipy, kasus satu token, dan AC offset-invari
 
 Hanya18,11% respons memiliki tanda penutup; batas128token berbeda dari paragraf mandiri kompetisi. Pada proxy SVC4 yang menjaga jumlah/bobot setiapkelas, validation penggantian lebih rendah pada5/5rotasi, selisih sekitar−0,038 sampai−0,068. Tidak dipilih, sehingga test selected identik baseline; CI delta[0;0] ini **bukan** bukti ekuivalensi model augmentasi. Recall eksternal pada tujuh label yang hadir hanya0,09421; ini **bukan** BA18kelas ataupun hidden-test score. Waktu proxy571,10detik. Bukti ini menolak penggantian pool secara menyeluruh dalam setting tersebut; belum menguji penambahan berbobot kecil atau subset respons lengkap.
 
-**Checkpoint dan reproduksi.** Head E19/E20/E21 disimpan; E22 menyimpan fold logits/config/log, tanpa estimator sparse siapinferensi. Data mentah Agent500 tetap di `data/ext/reader_agent500/`, tidak dipublikasi ulang di GitHub. Source notebook champion `ajikajadeh/ntl-apex-i-sota-contender/1` berhasil dipull ke `research/checkpoints/champion_apex_v1/`; ini arsip versi1, jangan menggantinya dengan versi3 yang masih pending hanya karena namanya sama.
+**Checkpoint dan reproduksi.** Head E19/E20/E21 disimpan; E22 menyimpan fold logits/config/log, tanpa estimator sparse siapinferensi. Data mentah Agent500 tetap di `data/ext/reader_agent500/`, tidak dipublikasi ulang di GitHub. Source notebook champion `ajikajadeh/ntl-apex-i-sota-contender/1` berhasil dipull ke `research/checkpoints/champion_apex_v1/`; ini arsip versi1, jangan menggantinya dengan versi3 yang mendapat0,055 hanya karena namanya sama.
 
 Jalankan dari root project dengan `.venv` yang sudah ada:
 
@@ -86,9 +86,21 @@ Jalankan dari root project dengan `.venv` yang sudah ada:
 
 Ekstraktor saat ini mendukung Metal/CPU lokal; bukan port CUDA/TPU untuk hidden rerun. Di Codex, akses Metal memerlukan eksekusi di luar sandbox; bila device berubah keCPU, signature cache menolak resume. Data kompetisi dan cache lama stage1/SVC harus tersedia untuk evaluasi fusion. Download source/model/data publik tidak menjalankan custom code repo pihak ketiga.
 
+### Audit submission V3 — skor0,055, bukan pending lagi
+
+API resmi mengonfirmasi submission57930534 (Apex I versi3) selesai dengan0,055. Champion57907202, notebookversi1, tetap0,665. Source kedua versi telah diarsipkan; versi3 berada di `research/checkpoints/failed_apex_v3/` beserta diff dan syntax audit. Seluruh delapan Python module yang ditulis notebookversi1/3 lolos syntax compilation; itu tidak membuktikan kompatibilitas model atau runtime.
+
+**Defect yang terverifikasi:** finalcell V3 membungkus `subprocess.run(cmd, check=True)` dengan `except Exception`, kemudian menulis semua label sebagai `gpt-5.5` bila file hasil/reference tidak ada. `kernels/guard/audit_apex_failure.py` mengeksekusi hanya cabang final yang telah diperiksa, mengalihkan path ke temporary fixture, dan mengganti subprocess dengan kegagalan buatan. Pada400ID sintetis, source asli menelan exception dan menulis400label sama; balanced accuracy sintetis1/18=0,05556. Ini **konsisten** dengan skor resmi yang mendekati chance, tetapi bukan bukti langsung bahwa jalur tersebut terjadi pada hidden run. Log exception hidden dan penyebab model-loading/runtime yang tepat tidak tersedia.
+
+**Perbaikan lokal:** `notebook/ntl_apex_v3_guarded_UNVALIDATED.ipynb` menghapus catch-all fatal tersebut, memvalidasi kesamaan setID dan whitelistlabel, serta menolak prediksi konstan pada rerun besar. Regression fixture membuktikan exception kini naik dan tidak membuat file prediksi palsu. Source asli tidak diubah. Notebook perbaikan adalah artefak diagnosis, **bukan kandidat submit**: belum ada dryrun CUDA400baris, ukuran runtime/RAM, atau peningkatan akurasi yang terverifikasi. Jangan mengirimnya hanya karena syntax/fixture lulus.
+
+Gerbang berikutnya: jalankan realbranch seluruh komponen pada data smoke berukuran cukup; periksa stdout/stderr dan checkpoint yang benar-benar terpakai. Fatal inferensi utama harus menghentikan promosi. Komponen opsional hanya boleh mempertahankan prediksi dasar yang sudah benar-benar dihitung untuk ID test saat itu. Tidak boleh mengganti kegagalan utama dengan label default konstan atau file lama yang kebetulan ada.
+
 ### Backup numerik privat setelah E22
 
 Dataset **[ajikajadeh/ntl-reader-e19-e22-checkpoint](https://www.kaggle.com/datasets/ajikajadeh/ntl-reader-e19-e22-checkpoint)** versi1 sudah berstatus `ready` dan `isPrivate=True`. Backup memuat26artefak numerik, termasuk15head terlatih, fitur spectral2699passage, ID/hash teks, completion bitmap, dan logits proxy E22; arsip lokal47,13MiB. Seluruh isi arsip lokal diperiksa dengan SHA-256. Daftar remote dipaginasi dan seluruh26ukuran artefak cocok; ini verifikasi ukuran remote, bukan pembacaan ulang setiap byte remote.
+
+Dokumentasi diagnosis V3 dan laporan13sel kemudian diperbarui pada **versi2**, yang juga sudah berstatus `ready`; fitur/head numerik tidak berubah.
 
 Kaggle membuka arsip otomatis: fitur berada di prefix `reader_features_heads_20261103/`, source di `ntl_research_checkpoint_20261103/source/`. Salin isi prefix fitur ke root source bila hendak melanjutkan training; jangan mengekstrak ke direktori input Kaggle yang readonly. Baseline cache lama tetap tersedia di dataset privat `ajikajadeh/ntl-research-checkpoint` (`oof_artifacts.tgz`). Training juga memerlukan `train.csv` resmi dan pool yang tercantum pada manifest. Repo GitHub hanya membawa source, laporan agregat, dan source notebook champion; tanpa raw passage kompetisi, kredensial, atau model numerik besar.
 
@@ -156,7 +168,8 @@ Kaggle membuka arsip otomatis: fitur berada di prefix `reader_features_heads_202
 | 57871600, 57872845 | "0.72431" | tidak ada skor | gagal dinilai |
 | 57901383 "Sovereign v2" dual DeBERTa + Trained27 | judul, tidak terukur | **error** | kode baru tidak pernah dijalankan sebelum hidden rerun, lihat Gerbang anti-error |
 | 57907202 "Apex I SOTA Contender" (sesi lain) | judul, tidak terukur | **0.665** | +0.001 dari 0.664, di dalam derau |
-| 57919689 "Sovereign v2 v3 Exception-Proof" (sesi lain) | judul, tidak terukur | pending | versi perbaikan 57901383 |
+| 57919689 "Sovereign v2 v3 Exception-Proof" (sesi lain) | judul, tidak terukur | 0.661 | versi perbaikan 57901383 |
+| 57930534 "Apex-III" versi3 | banyak komponen baru, tanpa CV terverifikasi | **0.055** | constant-fallback defect direproduksi; penyebab hidden exception belum diketahui |
 
 Notebook publik terbaik per 2026-11-03 adalah 0.666 (banyak fork V31/One Swap/Sovereign). Selisih 0.664 ke 0.666 lebih kecil dari bias seleksi: menurut simulasi GoPain (diskusi 755215), skor publik terbaik dari 5-20 varian mirip yang berbeda di 5% baris rata-rata 0.005-0.008 di atas skor sebenarnya. Pembanding yang jujur untuk ide baru adalah "terbaik dikurangi bias itu", dan skor private kemungkinan turun ke sekitar 0.655-0.66 untuk semua fork ini.
 

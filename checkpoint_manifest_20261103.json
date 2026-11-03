@@ -32,6 +32,11 @@
       "sha256": "b8a328b9272e3ebaa27b9e88b316f9d8cfdf3ee8fe0dc01432bc6196394ec9f8"
     },
     {
+      "path": "source/kernels/guard/audit_apex_failure.py",
+      "bytes": 5732,
+      "sha256": "d049bf6a4c88bd15cf28f51cf5e08bee3785e018fe13d3999f29c2ee92654e1f"
+    },
+    {
       "path": "source/kernels/guard/dryrun.py",
       "bytes": 3629,
       "sha256": "a862f0ef26616cd6ce31935aa0ed47ceb337d1bf98196fc0ff76c14af5471e5d"
@@ -172,14 +177,24 @@
       "sha256": "dd69aa0e30cbcd6634a5ae94c41752388eb84af856fdf3cbcf44adbf3f59afb9"
     },
     {
+      "path": "source/notebook/ntl_apex_v3_guarded_UNVALIDATED.ipynb",
+      "bytes": 171379,
+      "sha256": "2211eae7dc43ed4c4a9f921960e5ec248699e5aedbf3bbc770ae532c9c5e31d5"
+    },
+    {
+      "path": "source/notebook/ntl_champion_v1_0665_ARCHIVED.ipynb",
+      "bytes": 146306,
+      "sha256": "2a7bd47c2aeec3545ca8aae2ca668153faae15cd15436c71812a53f8e1a3beb9"
+    },
+    {
       "path": "source/notebook/ntl_report.ipynb",
       "bytes": 29780,
       "sha256": "6ab941b290e2a1adb92169c6ef82c308389f8cbd6380f15ed16d19aee431cda0"
     },
     {
       "path": "source/notebook/ntl_session_20261103.ipynb",
-      "bytes": 78770,
-      "sha256": "040e3b71388e963f8bfd0317114d60747c23d888adefd43ccd02a94adc384557"
+      "bytes": 82754,
+      "sha256": "297a0c4c07897151b43569b06998bc53cb272a045788e112834b82f26fd5f713"
     },
     {
       "path": "source/notebook/report_cells.py",
@@ -193,13 +208,13 @@
     },
     {
       "path": "source/notebook/session_20261103.py",
-      "bytes": 15477,
-      "sha256": "eae5245da7b14dc55d05c1b9f34debb5d325ab09294c1a90ca9b8e33dc0bf35e"
+      "bytes": 16525,
+      "sha256": "80267b541ea8363700d7c4e713dbb7bea93dcdb2be743fc1aeef2432d7890e4c"
     },
     {
       "path": "source/readme.md",
-      "bytes": 39723,
-      "sha256": "1f67157eaf2663285589e941c7ed2878817968cf18b231160013c53afce411ed"
+      "bytes": 42240,
+      "sha256": "e2033011a3a2ef034bb0fd200f3321582b2004bc41dcbef02281a1b8885bb100"
     },
     {
       "path": "source/research/REPORT.md",
@@ -215,6 +230,61 @@
       "path": "source/research/checkpoints/champion_apex_v1/ntl-apex-i-sota-contender.ipynb",
       "bytes": 130101,
       "sha256": "5b42bb8c3a87bcd91947268100df098e78cbd8c85c8034c9c46d39b5eb773e9c"
+    },
+    {
+      "path": "source/research/checkpoints/failed_apex_v3/extracted/comp_stack.py",
+      "bytes": 55720,
+      "sha256": "2f3497fe450703e832803761b992e91b05e516d500fb4d95f17bb1d097b993f4"
+    },
+    {
+      "path": "source/research/checkpoints/failed_apex_v3/extracted/gauss.py",
+      "bytes": 8219,
+      "sha256": "908b57113f1a7b8ebdbf204c6be87cbc385f765ba50ac07b4e270c64b7cf1000"
+    },
+    {
+      "path": "source/research/checkpoints/failed_apex_v3/extracted/infer.py",
+      "bytes": 51115,
+      "sha256": "fb53fe1d83c53f04e4bb3399f282df2e41a9ccbc9def0f582c23ad64cb760a15"
+    },
+    {
+      "path": "source/research/checkpoints/failed_apex_v3/extracted/sibling_style.py",
+      "bytes": 4970,
+      "sha256": "dffcaf90d4096fef8addaf55b80f4c2dcdd67c4b2b314b73919603e4fcf92d80"
+    },
+    {
+      "path": "source/research/checkpoints/failed_apex_v3/extracted/v34_pairwise.py",
+      "bytes": 15694,
+      "sha256": "ac2c1fe90a201d6e0e3222192ffcb0fa50dba7242720aa83eb01905e26aa0b3e"
+    },
+    {
+      "path": "source/research/checkpoints/failed_apex_v3/failure_regression.json",
+      "bytes": 1087,
+      "sha256": "3f2aaf42106eb1110702c3da7b1a86a04e540a22a1285ed3d13968dea07da3fe"
+    },
+    {
+      "path": "source/research/checkpoints/failed_apex_v3/kernel-metadata.json",
+      "bytes": 2346,
+      "sha256": "15765422aaaaaada42125598410450a5ba9b8a0e629b76b2bbc419549537189c"
+    },
+    {
+      "path": "source/research/checkpoints/failed_apex_v3/ntl-apex-i-sota-contender.ipynb",
+      "bytes": 170534,
+      "sha256": "d7ce553e7ea22d97f4d76cc4bf7993bea82de296222b074845c47cb5f445b7b4"
+    },
+    {
+      "path": "source/research/checkpoints/failed_apex_v3/regression_run.log",
+      "bytes": 1167,
+      "sha256": "2f9fc95d1fc78123d54bdfa02dfd524cb6016ceaa4011f102f20777b3e0d705e"
+    },
+    {
+      "path": "source/research/checkpoints/failed_apex_v3/source_diff.txt",
+      "bytes": 54520,
+      "sha256": "1001876e6bb0daeb3fc60d2f6c186079de778420dd4f29f809c7690bc614fa5b"
+    },
+    {
+      "path": "source/research/checkpoints/failed_apex_v3/syntax_audit.json",
+      "bytes": 1608,
+      "sha256": "c902283b74551b6c92a9f058a7dfbbddbcf60b3437ef0debd2ff5d68ffbc2413"
     },
     {
       "path": "source/research/checkpoints/inventory_20261103.json",
@@ -777,6 +847,11 @@
       "sha256": "43165623a27ff207c511b9352b586d8d0e4ae746e4fc6481097fda7847127cda"
     },
     {
+      "path": "source/research/live/20261103/pending_final_e22.txt",
+      "bytes": 318,
+      "sha256": "7bc8ce96941e28419a91ebdd5db8c195dc6af56a1c192b183718dd903e80ff3a"
+    },
+    {
       "path": "source/research/live/20261103/pending_refresh.txt",
       "bytes": 312,
       "sha256": "3b972294d945c68abd9bfd610eb8ae5071e768fb157a760e5986ee551e61f3c8"
@@ -807,14 +882,19 @@
       "sha256": "56f63d893f166f7cf38d5d212a5335798fcfde2198cc01dfaae24bb316aec585"
     },
     {
+      "path": "source/research/live/20261103/reader_checkpoint_status_v2.json",
+      "bytes": 48,
+      "sha256": "86907bcea10e4cd1857e5285e35f3b7d6491f85f42ac00ae0bb6abb463b910c4"
+    },
+    {
       "path": "source/research/live/20261103/reader_data_sources.json",
       "bytes": 2853,
       "sha256": "7bd9c42226a03b2f3bef1f2d94032f959e254d6ad1cb52817762d45f857b8d1f"
     },
     {
       "path": "source/research/live/20261103/submissions.txt",
-      "bytes": 3750,
-      "sha256": "7a51c7a3095d638593fb06dff15cf046cdb7366d67e4d5709c1139c7110f363f"
+      "bytes": 3755,
+      "sha256": "553fa17af66e0a87a16e00d9049dca2bf8430cd6080b5545e26c447a35c419fb"
     },
     {
       "path": "source/research/nbtxt.py",
@@ -862,11 +942,11 @@
       "sha256": "4df60df912f46d1a7a4752d0f8e4cb548848204573bd269ef79f1333af5906b7"
     }
   ],
-  "scope": "Research source, aggregate reports E15-E22, champion version1 source; no credentials, raw competition passages, per-ID OOF or numerical model weights.",
+  "scope": "Research source and aggregate reports E15-E22 plus V3 fallback regression and guarded UNVALIDATED notebook; no credentials, raw competition passages, per-ID OOF or numerical model weights.",
   "archive": {
     "name": "ntl_research_checkpoint_20261103.zip",
-    "bytes": 482545,
-    "sha256": "58a44300bc8f8acc34de18f5a99f054a486d2f7f779021713ede0b1983b0a4c8"
+    "bytes": 711955,
+    "sha256": "4c41b26c394aa5ac1937910160bcb226f2e46c440910abce1e1b0180d7fc9881"
   },
-  "usage": "Unzip; cd source. Aggregate report: python notebook/run_session_report.py. Numerical backup: private ajikajadeh/ntl-reader-e19-e22-checkpoint, version1."
+  "usage": "Unzip; cd source. Report: python notebook/run_session_report.py. Champion V1 is archived; guarded V3 is UNVALIDATED. Private numerical backup version2."
 }
