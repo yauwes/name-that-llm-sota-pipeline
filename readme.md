@@ -6,9 +6,9 @@ File ini adalah titik masuk untuk agen berikutnya. Detail per eksperimen ada di 
 
 ## Checkpoint aktif — 3 November 2026 WIB
 
-- Target riset pengguna: balanced accuracy **0,99**; **belum tercapai dan tidak dijamin**. Skor resmi terbaik yang dikonfirmasi API saat sesi ini adalah **0,665**, submission `57907202`.
+- Target riset pengguna: balanced accuracy **0,99**; **belum tercapai dan tidak dijamin**. Skor resmi terbaik yang dikonfirmasi API saat sesi ini adalah **0,665**, submission `57907202`. E23 menemukan dan memperbaiki ketidakcocokan layer/readout Q25-v5 pada salinan UNVALIDATED; tidak ada submission baru.
 - Submission `57930534` versi3 kini **COMPLETE, skor0,055**. Source memiliki jalur constant fallback yang berhasil direproduksi pada fixture; lihat audit V3 di bawah. Jangan mengirim ulang versi ini. Submission `57919873` = **0,663** dan `57919689` = **0,661**.
-- Akun `ajikajadeh`: GPU **0,00 jam tersisa**, TPU **20,00 jam tersisa** pada snapshot; reset API **7 November 2026 07:00 WIB**. Jangan memakai akun lain untuk melewati kuota. E14 `ajikajadeh/ntl-e14-regen-s2` kini **COMPLETE**; hasil dan log sudah diunduh ke `kernels/e14regen/out_live/`.
+- Akun `ajikajadeh`: GPU **0,00 jam tersisa**, TPU **20,00 jam tersisa** pada snapshot API terbaru setelah E26; reset API **7 November 2026 07:00 WIB**. Jangan memakai akun lain untuk melewati kuota. E14 `ajikajadeh/ntl-e14-regen-s2` kini **COMPLETE**; hasil dan log sudah diunduh ke `kernels/e14regen/out_live/`.
 - Repo remote lama `yauwes/name-that-llm` tidak ada. Repo yang ditemukan dan bisa diakses: **https://github.com/yauwes/name-that-llm-sota-pipeline**. Isinya berbeda dari history lokal; publikasi akan memakai branch/folder terisolasi agar tidak menimpa pekerjaan yang sudah ada.
 - Upaya write GitHub melalui integration dan PAT mendapat403 (scope write tidak tersedia). Fallback menggunakan sesi Chrome pemilik repo untuk upload4file pada branch `codex/ntl-20261103-cpu-audit`; commit **b41b17dc96fb3fd6def134e2f56e9f616f92fb7d** sudah dikonfirmasi API. Empat file (readme, notebook report, arsip source, manifest) tersedia di branch tersebut. Root pipeline main tidak ditimpa. Pembaruan E14/E18 kemudian tersimpan di commit **40cc5c825813fa4d50ab6ff8143f8f04d4221de7**; ukuran dan Git blob hash keempat artefak cocok dengan unggahan lokal.
 - File checkpoint utama sekarang bernama **`readme.md`** sesuai permintaan pengguna. Bagian status lama di bawah adalah catatan historis, bukan snapshot terkini.
@@ -33,7 +33,7 @@ Sumber kode: `research/experiments/reader_foldlocal.py`. Hasil/config/hash/per-f
 - **E16**: SVC4 baseline test mean **0,50057**, fusion reader Qwen27-layer16 dengan opsi train-prompt nuisance projection **0,52424**, positif **5/5** rotasi. Paired prompt-bootstrap95% delta **[+0,0120; +0,0348]**. Train-only scaler/PCA128; rank/gamma/C/bobot dipilih di val. Waktu sekitar9,92detik setelah import.
 - **E17 ablation**: fusion **tanpa** projection sudah memberi **0,52231**. CI95% fusion−SVC **[+0,0101; +0,0333]**. Tambahan selection projection hanya +0,00193 dengan CI95% **[-0,00145; +0,00531]**: **belum terkonfirmasi**. Maka mekanisme yang didukung adalah komplementaritas frozen-reader/SVC, bukan klaim bahwa menghapus topik pasti membantu. Waktu sekitar4,80detik.
 - Semua angka di atas memakai dataset historis yang sudah berulang kali ditelaah; bukan gold eksternal baru. Belum ada pembandingan nested melawan champion0,665. **Tidak layak submit sebagai pengganti champion.**
-- Notebook laporan yang telah dieksekusi13sel kode dalam IPython: `notebook/ntl_session_20261103.ipynb` (EDA, manifest, hasil train/val/test, ETA/elapsed, ablation, riwayat resmi, quota). Notebook ini CPU report; inference competition tetap notebook terpisah.
+- Notebook laporan yang telah dieksekusi17sel kode dalam IPython: `notebook/ntl_session_20261103.ipynb` (EDA, manifest, hasil train/val/test, ETA/elapsed, ablation, riwayat resmi, quota). Notebook ini CPU report; inference competition tetap notebook terpisah.
 - Pada iterasi E15–E18 komputasi baru memakai CPU lokal; E20 lanjutan memakai Metal lokal, dengan rincian di bawah. Chrome Active Events menampilkan dua pekerjaan yang sudah ada: scoring submission57930534 dan batch E14T4x2. Tidak dibuat sesi GPU/TPU interaktif baru yang perlu diputus. Jangan menghentikan scoring resmi; batch E14 berhenti otomatis saat selesai.
 
 ### E18 — audit hasil selesai dan analisis kesalahan
@@ -80,6 +80,11 @@ Jalankan dari root project dengan `.venv` yang sudah ada:
 .venv/bin/python research/experiments/nested_reader_confirm.py
 .venv/bin/python research/experiments/reader_data_audit.py
 .venv/bin/python research/experiments/reader_data_proxy.py
+.venv/bin/python kernels/guard/checkpoint_contract.py
+.venv/bin/python kernels/guard/repair_apex_q25_contract.py
+.venv/bin/python research/experiments/paired_rank_head.py
+.venv/bin/python research/experiments/styledistance_probe.py --evaluate
+.venv/bin/python research/experiments/nested_style_confirm.py
 .venv/bin/python notebook/build.py session_20261103.py ntl_session_20261103.ipynb
 .venv/bin/python notebook/run_session_report.py
 ```
@@ -96,13 +101,51 @@ API resmi mengonfirmasi submission57930534 (Apex I versi3) selesai dengan0,055. 
 
 Gerbang berikutnya: jalankan realbranch seluruh komponen pada data smoke berukuran cukup; periksa stdout/stderr dan checkpoint yang benar-benar terpakai. Fatal inferensi utama harus menghentikan promosi. Komponen opsional hanya boleh mempertahankan prediksi dasar yang sudah benar-benar dihitung untuk ID test saat itu. Tidak boleh mengganti kegagalan utama dengan label default konstan atau file lama yang kebetulan ada.
 
-### Backup numerik privat setelah E22
+### E23 — kontrak checkpoint pada Docker V3 (CPU, selesai)
+
+Job `ajikajadeh/ntl-v3-contract-audit-cpu`, versi1 dan2, sudah **COMPLETE**. Server mengonfirmasi GPU=False, TPU=False dan Docker digest sama dengan V3 (`9a6bcfda6d03b2cd9aa347ee8c1bae62043328ed0f4afe9bda014e4f8bbf9435`). Runtime aktual: torch2.11.0+cu128, transformers5.16.1, safetensors0.8.0, numpy2.1.3. Tidak ada backbone pretrained yang dimuat; hanya metadata, head kecil, tensor-header, dan model tiny acak di CPU. Source/report di `kernels/v3preflight_cpu/`; status dan metadata server di `research/live/20261103/`.
+
+**Kegagalan loader konkret ditemukan:** seluruh6adapter `q25_14v5*` mempunyai LoRA pada layer0–31, sedangkan spec V3 menetapkan `keep=27`. Dengan resolusi nama modul yang sama persis seperti source submitted, **35target modul pada layer27–31 tidak tersedia** pada backbone27layer. Merger V3 mengakses `_md[name]` tanpa menyaring target itu, sehingga kontrak ini memicu KeyError jika jalur Q25-v5 dijalankan. Ini kegagalan yang dapat diverifikasi tanpa bobot backbone besar; bukan sekadar perkiraan dari skor0,055. Log hidden asli masih tidak tersedia, jadi urutan exception pertama pada scoring tetap tidak diketahui.
+
+ModernBERT head cocok dengan18label, hidden1024, max_len384 dan mean_last; tiny forward CPU dengan SDPA eksplisit dan reference_compile=False lulus. Dua adapter V5d dalam grup N14B cocok nama modul/shape, serta metadata keep27, layers[2,4,6,9,13,17,22,27], max_len447, eos151643 sesuai baseline. Hasil ini tidak memvalidasi CUDA/T4, backend attention default, normalisasi aktual atau kualitas prediksi.
+
+**Kontrak dari referensi pembuat sudah ditemukan:** [Name That LLM — Fully Reproducible](https://www.kaggle.com/code/dhruvtibarewal/name-that-llm-fully-reproducible), snapshot notebook SHA256 `2ede3d05656504d629efb4087c90a5180cf575e115868c7aec36fb86977bfa46`, menyatakan Q25-v5 `keep=32`, readout `[3,5,8,11,16,21,27,32]`, max_len384, tanpa EOS tambahan, final norm aktif, dan label order yang sama. Ini referensi inferensi penulis, bukan rekonstruksi penuh proses training. V3 juga memakai readout yang salah: `[2,4,6,8,12,16,20,24]`. Delapan layer feature tetap memberi shape head yang sama, sehingga pemeriksaan dimensi saja tidak mendeteksinya.
+
+**Versi2 audit CPU:** seluruh6adapter mempunyai35modul hilang pada spec lama dan0modul hilang pada spec yang diperbaiki; seluruh factor-shape dan head-shape sesuai, head kecil finite. Waktu9,11detik di CPU Docker V3. Laporan di `kernels/v3preflight_cpu/out_v2/preflight_report.json`, SHA256 `2d3e2a83f922e864be046bcef5b148bdc37667cda3686f15df995ff96c47bee1`. Source/output versi1 dipertahankan di `archive_v1/`. Kedua job terminal, tidak perlu dihentikan atau diluncurkan ulang tanpa hipotesis baru.
+
+**Artefak perbaikan:** `notebook/ntl_apex_v3_contract_fixed_UNVALIDATED.ipynb`, dibangun dengan `kernels/guard/repair_apex_q25_contract.py`. Hanya spec Q25-v5 diperbaiki; bobot ensemble1,5 dan spec member lain dipertahankan. `checkpoint_contract.py` tertanam dan dijalankan sebelum backbone Q25 dimuat, menolak layer target di luar backbone, readout yang berbeda dari kontrak, label order dan shape head yang salah. Regresi sintetis membuktikan27vs32 tertangkap, serta readout salah yang shape-nya sama juga ditolak. Enam generated modules dan finalcell lolos compilation; notebook lolos nbformat validation. Fatal exception utama tetap naik tanpa membuat submission palsu. Semua ini correctness, **belum bukti skor lebih baik**.
+
+**Gerbang belum selesai:** real CUDA full-branch smoke ≥400baris, penggunaan RAM/VRAM dan estimasi4000baris, pemeriksaan output perkomponen, lalu paired quality validation. Menambah kedalaman27→32 juga mengubah biaya memori/waktu yang harus diukur. Jangan submit artefak ini atau mematikan fitur untuk memaksa smoke lolos tanpa mengevaluasi kembali scope. GPU masih0jam pada kuota terbaru; TPU20jam, sedangkan notebook ini memakai CUDA dan tidak langsung kompatibel TPU.
+
+### E24 — loss prompt-paired pada frozen head (CPU, selesai)
+
+`research/experiments/paired_rank_head.py` menambah column-ranking CE di dalam prompt ke row CE. Aturan test tetap satu passage independen. Scaler/PCA fit hanya pada train; lambda dipilih berdasarkan val logloss dan alpha berdasarkan val BA. Gradient analitik, satu prompt dengan kelas hilang, dan invariansi terhadap offset prompt lolos self-check numerik.
+
+Hasil mean test: pembanding ensemble0,57352; ordinary head fusion0,58076; paired-selected0,58028. CI selected−ordinary [-0,00145;0], tidak ada peningkatan; lambda nonzero hanya dipilih1/5rotasi. Kontrol label diacak dalam prompt mendapat0,05705, mendekati chance. Waktu21,48detik. Tidak dipromosikan dan tidak disubmit. Ini hipotesis adaptasi objektif symmetric contrastive, bukan replikasi CLIP atau hasil baru yang buta; cache dan gold historis tetap mempunyai keterbatasan provenance yang dicatat pada manifest.
+
+### E25/E26 — embedding gaya dan konfirmasi scope (selesai)
+
+[StyleDistance, NAACL2025](https://aclanthology.org/2025.naacl-long.436/) melatih representasi gaya dengan variasi gaya terkontrol. [Model resmi](https://huggingface.co/StyleDistance/styledistance) dipakai sebagai hipotesis feature, bukan bukti bahwa18model kompetisi dapat dikenali akurat. Frozen RoBERTa-base, final masked mean sesuai modul pooling penulis; revision `b7df5f0b0480773c097ba3121d83ca32b71015ca`, trust_remote_code=False, float16 di Metal lokal. Tidak menjalankan kode custom repo model.
+
+**E25.** Ekstraksi2699passage selesai145,89detik setelah smoke24baris; batch8, cap512,0baris terpotong, batas allocator40% recommended working set. Cache menyimpan ID/hashteks, tokenlength, bitmap completion dan SHA256 fitur. Transformasi style768 fit hanya pada train. Val memilih head style-only atau hybrid dengan logits external-stage1; alpha dipilih di val. Standalone style0,31166; ensemblebaseline0,57352 → fusion0,58751,4/5rotasi positif, CI paired delta [+0,00242;+0,02561]. CPU60,86detik, seluruh head konvergen. Ini gain pada cabang external-stage1+SVC historis, **bukan bukti melampaui champion0,665**.
+
+Pemeriksaan provenance menemukan dict `artifacts` v1 memakai basename sehingga entry `config.json` dasar tertimpa oleh `1_Pooling/config.json`. Hash base config dan semua file model/tokenizer/pooling dipulihkan dalam `artifact_hash_addendum.json` dengan path relatif yang berbeda. Manifest bertanda signature dan fitur asli tidak diubah diam-diam. Perbaiki pemakaian basename sebelum ekstraksi varian baru; jangan menyatakan manifest lama memuat base-config hash yang sebenarnya belum tercatat di sana.
+
+**E26.** `nested_style_confirm.py` mempertahankan comparator LoRA host-adapted, outer5fold120/30prompt, inner96/24, alpha fixed0,1 dari E21. Hanya fitur diganti style768; C dipilih di inner-val dan refit120prompt. Semua150prompt/2699baris mempunyai prediksi outer-test. Baseline0,59709 → fusion0,59857; CI [-0,00555;+0,00816],2/5fold positif. Reader standalone0,31415; CPU40,22detik. Gain terhadap pembanding lebih kuat **belum terkonfirmasi**, tidak dipromosikan. E26 menguji style-only head, bukan hybrid E25; jangan menafsirkan hasilnya sebagai penolakan semua bentuk fusion gaya.
+
+**Hipotesis berikut, belum dikerjakan:** E27 dapat membandingkan nested hybrid(style + external-stage1 logits) melawan head external-logits-only pada jumlah parameter/regularisasi yang terkontrol; alpha ditetapkan atau dipilih hanya dari inner-OOF yang sah, tidak dari outer-test yang sudah dibaca. Laporkan hybrid−logits-only untuk membedakan manfaat feature gaya dari manfaat stacking logits. Gunakan cache E25; tidak perlu mengekstrak ulang backbone. Ini tetap research historis, bukan gold baru buta. Gold exact-source dengan prompt baru tetap lebih bernilai untuk klaim generalisasi.
+
+Semua run lokal telah terminal dan model dilepas. Tidak dibuat runtime GPU/TPU cloud interaktif. Probe Kaggle E23 hanya CPU dan kedua versi COMPLETE. Tidak ada submission baru dari E23–E26.
+
+### Backup numerik privat E19–E26
 
 Dataset **[ajikajadeh/ntl-reader-e19-e22-checkpoint](https://www.kaggle.com/datasets/ajikajadeh/ntl-reader-e19-e22-checkpoint)** versi1 sudah berstatus `ready` dan `isPrivate=True`. Backup memuat26artefak numerik, termasuk15head terlatih, fitur spectral2699passage, ID/hash teks, completion bitmap, dan logits proxy E22; arsip lokal47,13MiB. Seluruh isi arsip lokal diperiksa dengan SHA-256. Daftar remote dipaginasi dan seluruh26ukuran artefak cocok; ini verifikasi ukuran remote, bukan pembacaan ulang setiap byte remote.
 
 Dokumentasi diagnosis V3 dan laporan13sel kemudian diperbarui pada **versi2**, yang juga sudah berstatus `ready`; fitur/head numerik tidak berubah.
 
-Kaggle membuka arsip otomatis: fitur berada di prefix `reader_features_heads_20261103/`, source di `ntl_research_checkpoint_20261103/source/`. Salin isi prefix fitur ke root source bila hendak melanjutkan training; jangan mengekstrak ke direktori input Kaggle yang readonly. Baseline cache lama tetap tersedia di dataset privat `ajikajadeh/ntl-research-checkpoint` (`oof_artifacts.tgz`). Training juga memerlukan `train.csv` resmi dan pool yang tercantum pada manifest. Repo GitHub hanya membawa source, laporan agregat, dan source notebook champion; tanpa raw passage kompetisi, kredensial, atau model numerik besar.
+**Versi3 sudah `ready`, privacy tetap True**, berdasarkan revalidasi API setelah E26. Sekarang memuat47artefak numerik, termasuk30head, fitur E20/E25, completion bitmap, ID/hashteks, dan logits E22; arsip63,82MiB. Seluruh entry arsip lokal diperiksa SHA256; inventori remote dipaginasi dan ukuran seluruh47file numerik cocok. Byte numerik remote belum diunduh dan dihash ulang. Source/report E23–E26 juga tersimpan dalam versi3, sebelum pembaruan catatan readiness ini. Artefak Q25-v5 perbaikan tersedia dalam source archive dan GitHub, bukan model terlatih baru.
+
+Kaggle membuka arsip otomatis. **Versi3** memuat fitur di prefix `reader_features_heads_20261103/reader_features_heads_20261103/` (dua tingkat, karena tar versi3 juga mempunyai folder pembungkus); versi1/2 memakai satu tingkat. Source berada di prefix `ntl_research_checkpoint_20261103/source/`. Path versi3 sudah diverifikasi dari daftar294file remote dan semua47ukuran numerik cocok; jangan menganggap prefix versi1 tetap berlaku. Salin isi prefix fitur ke root source bila hendak melanjutkan training; jangan mengekstrak ke direktori input Kaggle yang readonly. Baseline cache lama tetap tersedia di dataset privat `ajikajadeh/ntl-research-checkpoint` (`oof_artifacts.tgz`). Training juga memerlukan `train.csv` resmi dan pool yang tercantum pada manifest. Repo GitHub hanya membawa source, laporan agregat, dan source notebook champion; tanpa raw passage kompetisi, kredensial, atau model numerik besar.
 
 ### Riset tambahan dan dampaknya pada keputusan
 
@@ -114,6 +157,10 @@ Kaggle membuka arsip otomatis: fitur berada di prefix `reader_features_heads_202
 6. [Every Model Leaves a Trace: Multi-Resolution LLM Fingerprinting](https://arxiv.org/abs/2610.28434), 20 Oktober2026: membedakan keluarga, versi dekat, dan LoRA dalam protokol prompt-grouped. Paper secara eksplisit menandai prompt-neutralized embeddings sebagai diagnostik yang membutuhkan jawaban semua kandidat pada prompt yang sama. Itu tidak setara dengan hidden test kita yang tidak menyediakan grup lengkap. Karena itu, peningkatan dari centering seluruh18jawaban tidak boleh dijadikan ekspektasi submission. E21 justru menguji tambahan sinyal pada satu passage dengan scope train yang sesuai.
 
 ### Future work terurut (nilai informasi per biaya)
+
+**E25/E26 selesai:** style fusion membantu cabang baseline lebih lemah, belum terkonfirmasi pada LoRA kuat. E27 nested hybrid-versus-logits-only tercatat di atas; jangan mengulang ekstraksi style atau mengubah alpha berdasarkan test historis.
+
+**Prioritas correctness:** kontrak Q25-v5 sudah diperbaiki dan lolos CPU Docker audit E23. Tahap berikut adalah dryrun CUDA penuh dan parity/quality, bukan submit otomatis. Gunakan artefak `ntl_apex_v3_contract_fixed_UNVALIDATED.ipynb`; jangan mulai dari original V3 atau hanya salinan guarded tanpa kontrak. GPU belum tersedia pada snapshot, jadi lakukan eksperimen CPU/Metal yang terukur sambil mempertahankan gerbang itu.
 
 1. **E14 COMPLETE dan audit selesai**: tidak dipromosikan; OOF/log tersedia, bobot tahap2 tidak disimpan oleh source. Tidak ada runtime interaktif baru yang dinyalakan sesi ini. Jangan menjadwalkan ulang augmentasi ini sebelum ada hipotesis baru.
 2. **Perbaiki provenance cache**: simpan id/hashtext setiap baris, dataset version, modelrevision, tokenizer, precision dan codehash. Jangan memakai pool cache yang tidak dapat direkonstruksi untuk klaim konfirmasi.
