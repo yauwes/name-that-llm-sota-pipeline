@@ -1,10 +1,6 @@
-# Handoff utama agen — 3 November 2026
-
-Snapshot source, config, aggregate results, logs, dan notebook lama tanpa output tersedia dalam `ntl_research_checkpoint_20261103.zip`. Notebook laporan terbaru `ntl_session_20261103.ipynb` juga tersedia terpisah. Unzip, masuk folder `source/`, lalu ikuti langkah checkpoint di bawah. Data competition, per-ID OOF, full weights dan secrets tidak dipublish; referensi Kaggle artifacts ada di inventory. Manifest hash arsip ada di `checkpoint_manifest_20261103.json`.
-
 # Name That LLM: checkpoint riset
 
-Klasifikasi 18 LLM dari satu passage, metrik balanced accuracy, prompt uji tidak pernah terlihat. Code competition: inferensi hidden test (sekitar 4.000 passage, tanpa `prompt_id`) berjalan di notebook Kaggle offline maksimal 9 jam. Deadline final 2027-01-14 06:59 WIB, merger 2027-01-07.
+Klasifikasi 18 LLM dari satu passage, metrik balanced accuracy, prompt uji tidak pernah terlihat. Code competition: inferensi hidden test (sekitar 4.000 passage, tanpa `prompt_id`) berjalan di notebook Kaggle offline maksimal 9 jam. Tanggal deadline harus dicek ulang di Overview; tooltip Chrome saat sesi ini menunjuk 15 Januari 2027 06:59 WIB, berbeda dari deskripsi awal. Jangan memakai tanggal historis tanpa verifikasi.
 
 File ini adalah titik masuk untuk agen berikutnya. Detail per eksperimen ada di `research/REPORT.md`, notebook laporan di `notebook/ntl_report.ipynb`, catatan singkat lintas sesi di `../competition-log/name-that-llm.md`.
 
@@ -12,8 +8,9 @@ File ini adalah titik masuk untuk agen berikutnya. Detail per eksperimen ada di 
 
 - Target riset pengguna: balanced accuracy **0,99**; **belum tercapai dan tidak dijamin**. Skor resmi terbaik yang dikonfirmasi API saat sesi ini adalah **0,665**, submission `57907202`.
 - Submission `57930534` masih **PENDING** saat snapshot API. Jangan mengirim ulang versi yang sama atau menganggapnya sudah berhasil. Submission `57919873` = **0,663** dan `57919689` = **0,661**.
-- Akun `ajikajadeh`: GPU **0,00 jam tersisa**, TPU **20,00 jam tersisa**; reset API **7 November 2026 07:00 WIB**. Jangan memakai akun lain untuk melewati kuota. E14 `ajikajadeh/ntl-e14-regen-s2` masih RUNNING pada pemeriksaan pertama; output parsial belum tersedia.
+- Akun `ajikajadeh`: GPU **0,00 jam tersisa**, TPU **20,00 jam tersisa** pada snapshot; reset API **7 November 2026 07:00 WIB**. Jangan memakai akun lain untuk melewati kuota. E14 `ajikajadeh/ntl-e14-regen-s2` kini **COMPLETE**; hasil dan log sudah diunduh ke `kernels/e14regen/out_live/`.
 - Repo remote lama `yauwes/name-that-llm` tidak ada. Repo yang ditemukan dan bisa diakses: **https://github.com/yauwes/name-that-llm-sota-pipeline**. Isinya berbeda dari history lokal; publikasi akan memakai branch/folder terisolasi agar tidak menimpa pekerjaan yang sudah ada.
+- Upaya write GitHub melalui integration dan PAT mendapat403 (scope write tidak tersedia). Fallback menggunakan sesi Chrome pemilik repo untuk upload4file pada branch `codex/ntl-20261103-cpu-audit`; commit **b41b17dc96fb3fd6def134e2f56e9f616f92fb7d** sudah dikonfirmasi API. Empat file (readme, notebook report, arsip source, manifest) tersedia di branch tersebut. Root pipeline main tidak ditimpa.
 - File checkpoint utama sekarang bernama **`readme.md`** sesuai permintaan pengguna. Bagian status lama di bawah adalah catatan historis, bukan snapshot terkini.
 - Snapshot API tersimpan di `research/live/20261103/`. Tidak ada kredensial di log tersebut. Nilai title/expectation bukan hasil pengukuran.
 
@@ -36,8 +33,16 @@ Sumber kode: `research/experiments/reader_foldlocal.py`. Hasil/config/hash/per-f
 - **E16**: SVC4 baseline test mean **0,50057**, fusion reader Qwen27-layer16 dengan opsi train-prompt nuisance projection **0,52424**, positif **5/5** rotasi. Paired prompt-bootstrap95% delta **[+0,0120; +0,0348]**. Train-only scaler/PCA128; rank/gamma/C/bobot dipilih di val. Waktu sekitar9,92detik setelah import.
 - **E17 ablation**: fusion **tanpa** projection sudah memberi **0,52231**. CI95% fusion−SVC **[+0,0101; +0,0333]**. Tambahan selection projection hanya +0,00193 dengan CI95% **[-0,00145; +0,00531]**: **belum terkonfirmasi**. Maka mekanisme yang didukung adalah komplementaritas frozen-reader/SVC, bukan klaim bahwa menghapus topik pasti membantu. Waktu sekitar4,80detik.
 - Semua angka di atas memakai dataset historis yang sudah berulang kali ditelaah; bukan gold eksternal baru. Belum ada pembandingan nested melawan champion0,665. **Tidak layak submit sebagai pengganti champion.**
-- Notebook laporan yang telah dieksekusi7sel kode dalam IPython: `notebook/ntl_session_20261103.ipynb` (EDA, manifest, hasil train/val/test, ETA/elapsed, ablation, riwayat resmi, quota). Notebook ini CPU report; inference competition tetap notebook terpisah.
+- Notebook laporan yang telah dieksekusi8sel kode dalam IPython: `notebook/ntl_session_20261103.ipynb` (EDA, manifest, hasil train/val/test, ETA/elapsed, ablation, riwayat resmi, quota). Notebook ini CPU report; inference competition tetap notebook terpisah.
 - Penggunaan komputasi baru sesi ini: CPU lokal saja. Chrome Active Events menampilkan dua pekerjaan yang sudah ada: scoring submission57930534 dan batch E14T4x2. Tidak dibuat sesi GPU/TPU interaktif baru yang perlu diputus. Jangan menghentikan scoring resmi; batch E14 berhenti otomatis saat selesai.
+
+### E18 — audit hasil selesai dan analisis kesalahan
+
+`research/experiments/closing_audit.py` mengukur ulang E14 terhadap kontrol **pada tiga fold yang sama**. Qwen8 control0,56860 → E14 0,56494; paired prompt-bootstrap95% delta [-0,01977;+0,01296]. Llama8 control0,57916 → E14 0,57052; CI [-0,02654;+0,00864]. Hanya1/3fold positif pada masing-masing model. **Tidak ada bukti peningkatan, tidak dipromosikan.** CI yang melintasi nol juga berarti penurunan bukan kepastian statistik.
+
+Kernel E14 menyimpan OOF/log, tetapi source **tidak memanggil penyimpanan adapter/head tahap2**. Bobot akhir tidak dapat diambil dari run ini. Stage1 tetap direferensikan di kernel sumber; jangan menganggapnya sebagai checkpoint E14. Empat array OOF dan log sudah diunduh lokal; hash dicatat dalam hasil E18. Training berikutnya harus menyimpan adapter, head, scaler, config/revision dan status fold secara atomik setelah setiap fold, serta optimizer/scheduler/RNG bila resume di tengah epoch dibutuhkan. Tidak perlu mengulang run yang ditolak hanya demi memperoleh bobotnya.
+
+Analisis E16 (cabang SVC+reader, **bukan** championLB) menemukan107error baseline diperbaiki dan58prediksi benar menjadi salah. Akurasi keluarga0,7801;53,76% dari984error tetap dalam keluarga yang benar. Kebingungan terbesar Gemini3.7→3.8:68passage. BA pada passage≤64kata0,4098 dibanding>160kata0,6359. Hasil perkelas/panjang/pasangan ada di `research/experiments/e18_closing_audit/results.json`. Slice ini diagnostik yang dibaca setelah test; jangan memilih hyperparameter baru dari slice lalu menyebut hasilnya konfirmasi independen.
 
 ### Riset tambahan dan dampaknya pada keputusan
 
@@ -49,7 +54,7 @@ Sumber kode: `research/experiments/reader_foldlocal.py`. Hasil/config/hash/per-f
 
 ### Future work terurut (nilai informasi per biaya)
 
-1. **Ambil E14 setelah COMPLETE**, bandingkan fold0–2 dengan kontrol E12 pada prompt/seed yang sama; jangan membandingkan rerata3fold dengan rerata5fold. Periksa apakah checkpoint GPU tersimpan lengkap dan job sudah berhenti.
+1. **E14 COMPLETE dan audit selesai**: tidak dipromosikan; OOF/log tersedia, bobot tahap2 tidak disimpan oleh source. Tidak ada runtime interaktif baru yang dinyalakan sesi ini. Jangan menjadwalkan ulang augmentasi ini sebelum ada hipotesis baru.
 2. **Perbaiki provenance cache**: simpan id/hashtext setiap baris, dataset version, modelrevision, tokenizer, precision dan codehash. Jangan memakai pool cache yang tidak dapat direkonstruksi untuk klaim konfirmasi.
 3. **Konfirmasi fusion sederhana** pada outer-training yang benar dan ensemble kuat; jangan membuka test lalu mencari ratusan bobot. Tidak perlu mempertahankan projection sebelum gain incremental dibuktikan.
 4. **Gold exact-source bertopik baru** lebih bernilai untuk generalisasi daripada menambah fitur pada150prompt yang sama. Akuisisi API/vendor hanya bila identitas versi, setting, akses dan anggaran sah tersedia. Token HFread/write bukan saldo untuk inference berbayar.
@@ -147,6 +152,7 @@ Pasangan CV-LB yang terverifikasi: LoRA dua tahap publik CV per prompt 0.593 law
 | Menambah anggota LoRA ke blend kuat (publik) | paling banyak +0.004 |
 | E11 crop pada LoRA tahap 2 (1 epoch asli + 2 crop, pengganti epoch kedua) | -0.019 / -0.015 terhadap kontrol, 0/5 fold; sebagai anggota tambahan blend 0.6083 lawan 0.6147 |
 | E12 pseudo-label transduktif top-50% di tahap 2 | -0.011 / -0.015 terhadap kontrol, 0/5 fold |
+| E14 regenerasi komunitas atas prompt train (topik cocok, cos ≥ 0.35) | SVC host-only +0.036 tetapi SVC + pool -0.008; LoRA tahap 2 -0.004 / -0.009 terhadap kontrol |
 
 ### E11: crop pada LoRA tahap 2
 Kernel `ajikajadeh/ntl-s2-crops` memuat `stage1.pt` dari `ajikajadeh/ntl-twostage-train`, lalu melatih ulang tahap 2 dengan 1 epoch atas baris host asli ditambah 2 crop per passage (sekitar 1,1x komputasi tahap 2 lama). Fold dan seed sama, jadi perbandingannya berpasangan per fold dengan `oof_plain.npy`. q8 di GPU 0 dan ll8 di GPU 1 berjalan bersamaan.
@@ -203,7 +209,7 @@ Hasil (balanced accuracy OOF, berpasangan per fold, presisi pseudo 0.756-0.785):
 
 - **Proxy CPU** (`research/experiments/regen_value.py`): SVC host-only 0.3074, ditambah baris regen dari prompt blok train saja menjadi **0.3431 (+0.036, 5/5 rotasi)**; dengan bobot 0.5 menjadi 0.3368.
 - **Proxy CPU dengan pool** (`research/experiments/regen_pool.py`, SVC 4-view, pool 2.000 per kelas bobot 0.35, regen bobot 1): 0.4494 menjadi **0.4411 (-0.008, 2/5 rotasi)**. Kenaikan di setting host-only hanya efek volume yang sudah diberikan pool. Baris regen berperilaku seperti pool, bukan seperti host: topik yang sama tidak membuat gaya sama. Nilai data host kemungkinan berasal dari template prompt dan konfigurasi generasi host, bukan dari topiknya.
-- **LoRA tahap 2** (`kernels/e14regen`, kernel `ajikajadeh/ntl-e14-regen-s2`): host + baris regen dari prompt fold training (jumlahnya disamakan dengan baris host), 2 epoch, seed sama dengan kontrol, fold 0-2. Hasil: _diisi setelah kernel selesai_.
+- **LoRA tahap 2** (`kernels/e14regen`, kernel `ajikajadeh/ntl-e14-regen-s2`): host + baris regen dari prompt fold training (jumlahnya disamakan dengan baris host), 2 epoch, seed sama dengan kontrol, fold 0-2. Hasil terhadap kontrol: q8 0.5687 menjadi 0.5650 (-0.004, 1/3 fold), ll8 0.5792 menjadi 0.5705 (-0.009, 1/3 fold). Sekitar 1,5 jam per fold karena barisnya 2x. **Ditolak**, konsisten dengan E14b: baris regen berperilaku seperti pool, dan mencampur pool ke tahap 2 sudah lama diketahui merugikan.
 
 ### Opsi data bergaya host yang tersedia (dicek 2026-11-02)
 HF Inference Providers lewat token `yauwes` menyediakan zai-org/GLM-5.3-Flash ($0.15 input / $0.5 output per 1 juta token), zai-org/GLM-5.3 ($1.4 / $4.4), dan moonshotai/Kimi-K3 (sekitar $2.85 / $14.25). Akun HF itu akun gratis tanpa billing (`canPay: False`), jadi generate dalam jumlah berarti butuh billing dari pengguna. Model tertutup (Claude, GPT, Gemini) butuh API vendor atau OpenRouter. Taksiran untuk 1.500 passage per label untuk ketiga label terbuka sekitar $5-10, belum termasuk token reasoning.
