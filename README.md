@@ -1,20 +1,23 @@
 # Name That LLM — verified research checkpoint
 
-Verified official best balanced accuracy: **0.665**. Target0.99/rank1 remains unachieved. No new competition submission from E15–E35.
+Official best balanced accuracy: **0.665**. Target0.99/rank1 is unachieved and cannot be guaranteed. No new competition submission from this research session.
 
-- [Current Indonesian handoff and full experiment history](readme.md)
-- [Executed EDA and research notebook — 25 code cells](ntl_session_20261103.ipynb)
-- [411-file source snapshot](ntl_research_checkpoint_20261103.zip) and [SHA-256 manifest](checkpoint_manifest_20261103.json)
-- [E33–E35 isolated restore and three cached pipeline replays](context_identity_restore_verification.json)
-- [Five restored identity heads reproduce held-out predictions](identity_checkpoint_inference_verification.json)
-- [All43 new remote checkpoint members downloaded and SHA-256 verified](private_delta_roundtrip_verified.json)
-- [Clean restore and six cached CPU replays](restore_verification_20261104.json)
-- [Ten restored checkpoints reproduce held-out predictions](checkpoint_inference_verification_20261104.json)
+- [Indonesian handoff, validation caveats and full experiment history](readme.md)
+- [Executed EDA/research notebook — 29 code cells](ntl_session_20261103.ipynb)
+- [478-file source snapshot](ntl_research_checkpoint_20261103.zip) and [SHA-256 manifest](checkpoint_manifest_20261103.json)
+- [E37 private snapshot: all10 remote members verified](e37_private_verified.json), [actual CPU inference parity](e37_cpu_snapshot_parity.json) and [actual MPS epoch-resume parity](e37_resume_parity.json)
+- [E38: all21 remote members verified](e38_private_verified.json) and [ten remote heads reproduce predictions](e38_remote_head_inference_verified.json)
+- [E39: all33 remote members verified](e39_private_verified.json) and [ten remote heads reproduce predictions](e39_remote_head_inference_verified.json)
+- [Prior E33–E35 isolated restore/replay proof](context_identity_restore_verification.json)
 
-E34 tests a same-source pair verifier with prompt-disjoint inner selection and fixed fusion weight. It reduces mean test0.59709→0.58153 and is rejected. E33/E35 test3530–4040row grouping contexts with frozen thresholds: primary target predictions stay unchanged; these fixtures do not establish a leaderboard gain. Historical gold has been inspected repeatedly. None of these scores is a fresh hidden-test estimate or a replacement for the0.665champion.
+E38 nonlinear score heads: inner-selected fixed fusion0.59562 versus baseline0.59709; E39 soft provider×model heads:0.59451 versus0.59709. Neither improves the baseline reliably; neither is promoted. These are head-only experiments on historical caches, not championCV or hidden-test predictions. Source-cache provenance limitations remain.
 
-Private storage: [base numeric checkpoint version4](https://www.kaggle.com/datasets/ajikajadeh/ntl-reader-e19-e22-checkpoint/versions/4) plus [E33–E35 delta version1](https://www.kaggle.com/datasets/ajikajadeh/ntl-e33-e35-research-checkpoint/versions/1). Restore latest public source, overlay basev4 then deltav1, attach official train.csv. The13.29MiB delta has43members including5head files and a hash-only context index, so audit replay does not require raw external paragraphs. The prior base retains355entries/50joblibfiles. Public fold JSON is aggregate-only.
+**E37 local MiniLM training is still active**, with3/5folds complete at this snapshot; do not duplicate its process or alter signature-bound source. Eight-epoch budget is not proof of convergence. The first private snapshot contains inner0epoch8/refit0epoch3, not the newer complete folds. Public progress_summary is aggregate-only and must not become a resumable fold cache. Another agent owns the TPU job; this session does not control it.
 
-The Q25-v5 contract repair remains **UNVALIDATED** for full CUDA serving and quality. OriginalV3 scored0.055; championV1 remains0.665. GPU quota was0h and TPU20h at the4NovemberAPIcheck. E33–E35 ran locally and all own jobs terminated.
+Restore source first, then the private checkpoints needed by the experiment:
 
-This branch preserves main. Inherited score names are historical. Public uploads exclude credentials, raw competition passages and numeric model weights. Full numeric state is stored privately on Kaggle.
+- [Base numeric version4](https://www.kaggle.com/datasets/ajikajadeh/ntl-reader-e19-e22-checkpoint/versions/4) and [E33–E35 delta version1](https://www.kaggle.com/datasets/ajikajadeh/ntl-e33-e35-research-checkpoint/versions/1).
+- [E37 partial training snapshot version1](https://www.kaggle.com/datasets/ajikajadeh/ntl-e37-minilm-checkpoints/versions/1), plus pinned official MiniLM backbone.
+- [E38 heads, four score arrays and two original stage1adapters version1](https://www.kaggle.com/datasets/ajikajadeh/ntl-e38-score-head-checkpoint/versions/1), then [E39 small delta version1](https://www.kaggle.com/datasets/ajikajadeh/ntl-e39-hierarchical-checkpoint/versions/1).
+
+Attach official train.csv. Pretrained upstream backbones and raw passages are not redistributed. Q25-v5 repair remains **UNVALIDATED** for full CUDA serving/quality. OriginalV3 scored0.055; championV1 remains0.665. Public uploads exclude credentials, raw passages and numeric model weights. This branch preserves main.

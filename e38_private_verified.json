@@ -1,0 +1,15 @@
+{
+  "dataset": "ajikajadeh/ntl-e38-score-head-checkpoint",
+  "version": 1,
+  "is_private": true,
+  "all_remote_bytes_sha256_verified": 21,
+  "manifest_byte_identical": true,
+  "archive": {
+    "path": "score_heads_stage1_20261104.tar.gz",
+    "bytes": 238874247,
+    "sha256": "44b6045bd57d1fd224de864887c2a0e52aedc74c63278370556008e73f5321ae"
+  },
+  "download_mode": "individual",
+  "elapsed_s": 79.43239775000256,
+  "scope": "All manifest members downloaded and SHA-256 verified; not evidence of model quality, CUDA execution or leaderboard improvement."
+}

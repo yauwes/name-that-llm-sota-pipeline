@@ -1,0 +1,24 @@
+{
+  "snapshot_archive_sha256": "b689f0dc83309e44e4d571d61e12bebc65134dc3ad08e951db244f15790c3140",
+  "resume_from_epoch": 3,
+  "replayed_epoch": 4,
+  "reference": {
+    "epoch": 4,
+    "online_train_loss": 2.491561032379596,
+    "online_train_accuracy": 0.18943955534969895,
+    "elapsed_s": 59.36327962498763
+  },
+  "resumed": {
+    "epoch": 4,
+    "online_train_loss": 2.491561032379596,
+    "online_train_accuracy": 0.18943955534969895,
+    "elapsed_s": 163.13228670798708
+  },
+  "loss_delta": 0.0,
+  "accuracy_delta": 0.0,
+  "passed": true,
+  "isolated_directory": "/var/folders/bs/ctds70js6y114wv99bkyy6x80000gn/T/ntl_minilm_resume_20261104_gk1mqn4m",
+  "elapsed_s": 185.043293833005,
+  "code_sha256": "882549db140c56fdf5b7375cddb898b9c398ae09d1006ff59cbadcd97dbcc4dd",
+  "scope": "One actual optimizer/scheduler/CPU+MPS-RNG epoch resume compared with an uninterrupted refit trajectory. Not every checkpoint/device or generalization verification."
+}

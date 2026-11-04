@@ -1,0 +1,15 @@
+{
+  "dataset": "ajikajadeh/ntl-e39-hierarchical-checkpoint",
+  "version": 1,
+  "is_private": true,
+  "all_remote_bytes_sha256_verified": 33,
+  "manifest_byte_identical": true,
+  "archive": {
+    "path": "hierarchical_heads_20261104.tar.gz",
+    "bytes": 436030,
+    "sha256": "2278836acb67738ebb48c67b3768958fe81b99b434fec9bda89e490132fd1970"
+  },
+  "download_mode": "individual",
+  "elapsed_s": 59.6816698340117,
+  "scope": "All manifest members downloaded and SHA-256 verified; not evidence of model quality, CUDA execution or leaderboard improvement."
+}

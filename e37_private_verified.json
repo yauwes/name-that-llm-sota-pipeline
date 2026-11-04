@@ -1,0 +1,27 @@
+{
+  "dataset": "ajikajadeh/ntl-e37-minilm-checkpoints",
+  "version": 1,
+  "is_private": true,
+  "files_size_verified": 10,
+  "all_remote_bytes_sha256_verified": 10,
+  "manifest_byte_identical": true,
+  "archive_sha256": "b689f0dc83309e44e4d571d61e12bebc65134dc3ad08e951db244f15790c3140",
+  "archive_bytes": 92127851,
+  "phases": [
+    {
+      "phase": "inner0",
+      "epoch": 8,
+      "selected_epoch": 8,
+      "internally_consistent": true
+    },
+    {
+      "phase": "refit0",
+      "epoch": 3,
+      "selected_epoch": 3,
+      "internally_consistent": true
+    }
+  ],
+  "completed_folds": [],
+  "download_verify_s": 16.54132024999126,
+  "scope": "Snapshot checkpoint backup only; training has advanced locally beyond this version. No full5fold or new leaderboard claim."
+}

@@ -1,0 +1,60 @@
+{
+  "experiment": "e39",
+  "heads": [
+    {
+      "fold": 0,
+      "family": "flat",
+      "prediction_match": true
+    },
+    {
+      "fold": 0,
+      "family": "hierarchical",
+      "prediction_match": true
+    },
+    {
+      "fold": 1,
+      "family": "flat",
+      "prediction_match": true
+    },
+    {
+      "fold": 1,
+      "family": "hierarchical",
+      "prediction_match": true
+    },
+    {
+      "fold": 2,
+      "family": "flat",
+      "prediction_match": true
+    },
+    {
+      "fold": 2,
+      "family": "hierarchical",
+      "prediction_match": true
+    },
+    {
+      "fold": 3,
+      "family": "flat",
+      "prediction_match": true
+    },
+    {
+      "fold": 3,
+      "family": "hierarchical",
+      "prediction_match": true
+    },
+    {
+      "fold": 4,
+      "family": "flat",
+      "prediction_match": true
+    },
+    {
+      "fold": 4,
+      "family": "hierarchical",
+      "prediction_match": true
+    }
+  ],
+  "model_count": 10,
+  "elapsed_s": 0.2128764160152059,
+  "checkpoint_root": "data/hierarchical_checkpoint_20261104_remote_roundtrip/individual",
+  "feature_root": "data/score_head_checkpoint_20261104_remote_roundtrip/individual",
+  "scope": "Ten actual reloaded heads/scalers reproduce heldout classifier/fusion predictions. Does not retroactively prove upstream score-row provenance or rawtext/CUDA/hidden-test quality."
+}
