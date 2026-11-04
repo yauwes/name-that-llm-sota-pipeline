@@ -1,0 +1,11 @@
+{
+  "source_signature": "4340ffaec81489edfedbc8bcd642a59c9f1f16520174a6914d2b879be9300a58",
+  "notebook_lib_sha256": "723cf467d106db1e6d9d2ea0725b7170738433749cccd2cb64177ce31a3d8f5c",
+  "verifier_code_sha256": "6fbebdd176191bfe628b7aabc170254fe816bb58e7f02153de360f71f464917c",
+  "training_session": 39884,
+  "training_exit_code": 0,
+  "inference_session": 75010,
+  "inference_exit_code": 0,
+  "all_2699_pred_match": true,
+  "scope": "Final local artifact/inference contract only; no CUDA or hiddenquality claim"
+}

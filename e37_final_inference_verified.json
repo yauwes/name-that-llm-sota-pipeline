@@ -1,0 +1,48 @@
+{
+  "signature": "4340ffaec81489edfedbc8bcd642a59c9f1f16520174a6914d2b879be9300a58",
+  "folds": [
+    {
+      "fold": 0,
+      "rows": 540,
+      "all_predictions_identical": true,
+      "checkpoint_sha256": "28e1c978a1a3c93eef1708384007fcf7e55b253c09c0c3c951d6efc3c6ea459c"
+    },
+    {
+      "fold": 1,
+      "rows": 540,
+      "all_predictions_identical": true,
+      "checkpoint_sha256": "1c59eaa80d2c1b4943088b822f58e370ea9aa7b67a86fc6d4f14908aa369c794"
+    },
+    {
+      "fold": 2,
+      "rows": 539,
+      "all_predictions_identical": true,
+      "checkpoint_sha256": "29905849ec8e99ca83d887d5d7374c27b1f50a430c1d791408a6166a1e16b79b"
+    },
+    {
+      "fold": 3,
+      "rows": 540,
+      "all_predictions_identical": true,
+      "checkpoint_sha256": "a64bf72b82559c8e35bd7702aa8895f12f948a823c4f65f85ac61aa6df3c610a"
+    },
+    {
+      "fold": 4,
+      "rows": 540,
+      "all_predictions_identical": true,
+      "checkpoint_sha256": "ea8297b1fc7e7df9e2056ea7f47acf72b9ad7c37a20b7f1a6aedfbd059c1eeb0"
+    }
+  ],
+  "total_rows": 2699,
+  "device": "mps",
+  "token_contract": {
+    "rows": 2699,
+    "minimum": 47,
+    "median": 134.0,
+    "maximum": 381,
+    "cap": 384,
+    "rows_exceeding_cap": 0
+  },
+  "elapsed_s": 53.635535083012655,
+  "snapshot_root": "/Users/erwinqodariyah/Claude Project/Kaggle/name-that-llm",
+  "scope": "Actual full heldout adapter inference reproduces stored predictions. Not an independent training rerun, hidden-test estimate, convergence proof or CUDA-serving validation."
+}

@@ -1,0 +1,15 @@
+{
+  "dataset": "ajikajadeh/ntl-e37-minilm-checkpoints",
+  "version": 2,
+  "is_private": true,
+  "all_remote_bytes_sha256_verified": 44,
+  "manifest_byte_identical": true,
+  "archive": {
+    "path": "minilm_adapt_checkpoint_20261104.tar.gz",
+    "bytes": 527058027,
+    "sha256": "6d4aa4c4f7917cfcb1019447573494e0cde0fde45d7e80aadd65ae995078d555"
+  },
+  "download_mode": "individual",
+  "elapsed_s": 170.84275904099923,
+  "scope": "All manifest members downloaded and SHA-256 verified; not evidence of model quality, CUDA execution or leaderboard improvement."
+}

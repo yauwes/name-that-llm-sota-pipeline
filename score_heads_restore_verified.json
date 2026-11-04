@@ -1,0 +1,25 @@
+{
+  "restored_directory": "/private/var/folders/bs/ctds70js6y114wv99bkyy6x80000gn/T/ntl_score_head_restore_w_3kpjf3/source",
+  "source_archive_sha256": "f37399e27ba02546afdc21582d121051a7f398a89a93039f621d42d6cd1ee982",
+  "source_files_verified": 478,
+  "private_files_verified": 54,
+  "private_restore_mode": "Code bytes copied; numeric/metadata SHA-verified symlinks to actual downloaded remote members",
+  "jobs": [
+    {
+      "experiment": "e38",
+      "cached_metrics_identical": true,
+      "actual_heads_replayed": 10,
+      "elapsed_s": 10.096438166016014
+    },
+    {
+      "experiment": "e39",
+      "cached_metrics_identical": true,
+      "actual_heads_replayed": 10,
+      "elapsed_s": 10.187910707987612
+    }
+  ],
+  "raw_external_passages_required": false,
+  "pretrained_backbone_required": false,
+  "elapsed_s": 20.880992417020025,
+  "scope": "Isolated cached E38/E39 pipeline replay and20actualhead inferences. Not independent training, rawtext backbone/CUDA or hidden leaderboard verification."
+}
